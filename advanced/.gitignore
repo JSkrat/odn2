@@ -1,12 +1,5 @@
-assets/*
-!assets/.gitignore
-protected/runtime/*
-!protected/runtime/.gitignore
-protected/data/*.db
-themes/classic/views/
-
 # yii console command
-/advanced/yii
+/yii
 
 # phpstorm project files
 .idea
@@ -23,7 +16,6 @@ nbproject
 Thumbs.db
 
 # composer vendor dir
-/advanced/vendor
 /vendor
 
 # composer itself is not needed
@@ -39,13 +31,4 @@ phpunit.phar
 
 # vagrant runtime
 /.vagrant
-
-# vim
-*.swp
-
-# passwords
-/advanced/environments/dev/common/config/main-local.php
-/advanced/environments/prod/common/config/main-local.php
-
-/auth
 
