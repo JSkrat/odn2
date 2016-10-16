@@ -1,9 +1,16 @@
 Options +FollowSymLinks
 # use mod_rewrite for pretty URL support
 RewriteEngine on
-# If a directory or a file exists, use the request directly
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} ^/assets/ [or]
+RewriteCond %{REQUEST_URI} ^/css/ [or]
+RewriteCond %{REQUEST_URI} ^/favicon.ico$ [or]
+RewriteCond %{REQUEST_URI} ^/robots.txt$
+RewriteRule ^(.*)$ /advanced/frontend/web/$1 [last]
+ # If a directory or a file exists, use the request directly
+RewriteCond "%{REQUEST_FILENAME}" "!-f"
+RewriteCond "%{REQUEST_FILENAME}" "!-d" [or]
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^(.*)$ /advanced/frontend/web/index.php/$1 [last]
 # Otherwise forward the request to index.php
 #RewriteRule . /advanced/frontend/web/index.php
-RewriteRule ^(.*)$ /advanced/frontend/web/index-test.php?r=$1
+

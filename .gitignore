@@ -44,8 +44,7 @@ phpunit.phar
 *.swp
 
 # passwords
-/advanced/environments/dev/common/config/main-local.php
-/advanced/environments/prod/common/config/main-local.php
+/advanced/common/config/main-local.php
 
 /auth
 
