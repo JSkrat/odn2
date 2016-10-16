@@ -8,8 +8,7 @@ use yii\widgets\ActiveForm;
 
 $this->title = 'Update Template: ';
 $this->params['breadcrumbs'][] = ['label' => 'Classes', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $classModel->name, 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $classModel->name, 'url' => ['index', 'class' => $classModel->id]];
 $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Update template';
 ?>
 <div class="template-values-update">

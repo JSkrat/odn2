@@ -44,11 +44,6 @@ class AdminController extends Controller
 			$dataProvider = new ActiveDataProvider([
 				'query' => TemplateQuery::find()->where(['template_class_id' => $class]),
 			]);
-//			$model = new TemplateQuery();
-//			$dataProvider = new ArrayDataProvider([
-//				'allModels' => $model->find()->where(['template_class_id' => $class])->all()
-//			]);
-//			$dataProvider->key = 'id';
 			return $this->render('index', [
 				'dataProvider' => $dataProvider,
 				'fields' => array_merge(['id'], TemplateFields::find()->select('name')->where(['template_class_id' => $class])->column()),
@@ -109,6 +104,7 @@ class AdminController extends Controller
 			$class = $model->classID;
 		} else {
 			$model = new TemplateQuery();
+			$model->setClass($class);
 		}
 		$classModel = TemplateClasses::findOne($class);
 		if (null === $classModel) { throw new NotFoundHttpException('The requested page does not exist.'); }

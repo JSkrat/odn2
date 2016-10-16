@@ -28,46 +28,24 @@ class TemplateQuery extends ActiveRecord {
 	private $string = array();
 	public $id;
 	
-//	public function __construct($classID, $config = array()) {
-//		$this->classID = $classID;
-//		$this->className = TemplateClasses::findOne($classID)->name;
-//		foreach (TemplateFields::find()->where(['template_class_id' => $classID])->all() as $field) {
-//			$this->data[$field->name] = $field->default_value;
-//			$this->allFields[] = $field->name;
-//			$this->types[$field->name] = $field->type;
-//			$this->labels[$field->name] = $field->name;
-//			if (empty($field->default_value)) { $this->required[] = $field->name; }
-//			if (in_array($field->namedType->type_name, array('text', 'image', 'formatted text'))) { 
-//				$this->string[] = $field->name;				
-//			} elseif (in_array($field->namedType->type_name, array('template'))) {
-//				$this->integer[] = $field->name;
-//			}
-//		}
-////		if ($templateID) { foreach (TemplateValues::find()->where(['template_class_id' => $classID, 'template_id' => $templateID]) as $value) {
-////			$this->data[$value->name] = $value->value;
-////			if ($value->type) {
-////				$this->types[$value->name] = $value->type;
-////			}
-////		}}
-//		parent::__construct($config);
-//	}
-	
-//	public static function instantiate($row) {
-////		parent::instantiate($row);
-////		$x = $a;
-////		echo "instantiate\n";
-////		print_r($row);
-////		if ($row['id'] == 2) 		die();
-//		return new static($row['template_class_id']);
-//	}
-	
-	public static function populateRecord($record, $row) {
-//		echo json_encode([$record, $row]);
-//		die();
-		// initialize object with fields
-		$id = $row['id'];
-		$record->classID = $row['template_class_id'];
-//		$record->template_class_id = $row['template_class_id'];
+	/**
+	 * define template class to create all fields for instance
+	 * @param integer $classID
+	 * @return void
+	 */
+	public function setClass($classID) {
+		TemplateQuery::_setClass($this, $classID);
+	}
+
+	/**
+	 * define template class to create all fields
+	 * static function
+	 * @param object $record specify TemplateQuery object to set class for
+	 * @param integer $classID
+	 * @return void
+	 */
+	public static function _setClass($record, $classID) {
+		$record->classID = $classID;
 		$record->className = TemplateClasses::findOne($record->classID)->name;
 		foreach (TemplateFields::find()->where(['template_class_id' => $record->classID])->all() as $field) {
 			$record->data[$field->name] = $field->default_value;
@@ -81,6 +59,12 @@ class TemplateQuery extends ActiveRecord {
 				$record->integer[] = $field->name;
 			}
 		}
+	}
+	
+	public static function populateRecord($record, $row) {
+		// initialize object with fields
+		$id = $row['id'];
+		TemplateQuery::_setClass($record, $row['template_class_id']);
 		// populate values
 		$fields = TemplateValues::find()->where(['template_id' => $id])->all();
 		$row = $record->data;
@@ -120,7 +104,6 @@ class TemplateQuery extends ActiveRecord {
             [$this->required, 'required'],
             [$this->string, 'string'],
 			[$this->integer, 'integer'],
-//			[['template_class_id'], 'exist', 'skipOnError' => true, 'targetClass' => TemplateClassesAllowed::className(), 'targetAttribute' => ['template_class_id' => 'template_class_id']],
         ];
     }
 
