@@ -26,9 +26,24 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 					break;
 				case 'template':
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name]);
+					break;
+				case 'page':
+					echo $form->field($model, $f->name)->dropDownList($allPagesList);
+					break;
 				}
 			?>
 			<?php endforeach; ?>
+			<hr>
+			<ul>
+				<?php foreach ($allPagesCheckboxen as $id => $page): ?>
+				<li>
+					<label for="page_<?= $id ?>">
+						<input type="checkbox" name="pages[<?= $id ?>]" id="page_<?= $id ?>" <?= ($page['checked'])? 'checked': '' ?> >
+						<?= $page['caption'] ?>
+					</label>
+				</li>
+				<?php endforeach; ?>
+			</ul>
 			<div class="form-group">
 				<?= Html::submitButton(
 						$model->isNewRecord ? 'Create' : 'Update', 

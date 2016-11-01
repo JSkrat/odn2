@@ -33,7 +33,7 @@ class TemplateValues extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['template_id', 'value'], 'required'],
+            [['template_id'], 'required'],
             [['type', 'template_id'], 'integer'],
             [['value'], 'string'],
             [['name'], 'string', 'max' => 64],

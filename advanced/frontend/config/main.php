@@ -42,9 +42,11 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+//				['pattern' => '', 'route' => 'PageController\index']
             ],
         ],
         
     ],
+	'defaultRoute' => 'page/index',
     'params' => $params,
 ];

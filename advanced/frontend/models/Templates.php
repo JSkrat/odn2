@@ -14,6 +14,7 @@ use Yii;
  *
  * @property TemplateValues[] $templateValues
  * @property TemplateFields[] $names
+ * @property Pages $pages
  * @property TemplateClasses $templateClass
  */
 class Templates extends \yii\db\ActiveRecord
@@ -35,6 +36,7 @@ class Templates extends \yii\db\ActiveRecord
             [['template_class_id'], 'required'],
             [['template_class_id', 'group_id'], 'integer'],
             [['name'], 'string', 'max' => 64],
+//			[['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['page_id' => 'id']],
             [['template_class_id'], 'exist', 'skipOnError' => true, 'targetClass' => TemplateClasses::className(), 'targetAttribute' => ['template_class_id' => 'id']],
         ];
     }
@@ -46,6 +48,7 @@ class Templates extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+//			'page_id' => 'Page ID',
             'template_class_id' => 'Template Class ID',
             'name' => 'Name',
             'group_id' => 'Group ID',
@@ -75,4 +78,11 @@ class Templates extends \yii\db\ActiveRecord
     {
         return $this->hasOne(TemplateClasses::className(), ['id' => 'template_class_id']);
     }
+	
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+//	public function getPage() {
+//		return $this->hasOne(Templates::className(), ['id' => 'page_id']);
+//	}
 }

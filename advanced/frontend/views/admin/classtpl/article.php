@@ -1,1 +1,0 @@
-<?= $data['title'] ?> (<?= $data['author'] ?>)

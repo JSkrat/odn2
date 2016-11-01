@@ -14,14 +14,16 @@ use frontend\models\TemplateFields;
 use frontend\models\TemplateValues;
 use frontend\models\TemplateClassesAllowed;
 use frontend\models\TemplateClasses;
+//use frontend\models\Pages;
+//use frontend\models\PageFields;
 
 class TemplateQuery extends ActiveRecord {
-	public $classID;
-	public $template_class_id;
-	public $className;
+	public $classID; // TODO: create getter instead of public property
+	public $template_class_id; // TODO: create getter instead of public property
+	public $className; // TODO: create getter instead of public property
 	public $allFields = array();
 	public $data = array();
-	private $types = array();
+	public $types = array(); // TODO: create getter instead of public property
 	private $labels = array();
 	private $required = array();
 	private $integer = array();
@@ -44,15 +46,24 @@ class TemplateQuery extends ActiveRecord {
 	 * @param integer $classID
 	 * @return void
 	 */
-	public static function _setClass($record, $classID) {
-		$record->classID = $classID;
-		$record->className = TemplateClasses::findOne($record->classID)->name;
-		foreach (TemplateFields::find()->where(['template_class_id' => $record->classID])->all() as $field) {
+	public static function _setClass($record, $classID, $fields = null) {
+		if (is_array($classID)) {
+			// for not to query that again if we queried it before
+			$record->classID = $classID['id'];
+			$record->className = $classID['name'];
+		} else {
+			$record->classID = $classID;
+			$record->className = TemplateClasses::findOne($record->classID)->name;
+		}
+		if (! isset($fields)) {
+			$fields = TemplateFields::find()->where(['template_class_id' => $record->classID])->all();
+		}
+		foreach ($fields as $field) {
 			$record->data[$field->name] = $field->default_value;
 			$record->allFields[] = $field->name;
 			$record->types[$field->name] = $field->type;
 			$record->labels[$field->name] = $field->name;
-			if (empty($field->default_value)) { $record->required[] = $field->name; }
+			if (is_null($field->default_value)) { $record->required[] = $field->name; }
 			if (in_array($field->namedType->type_name, array('text', 'image', 'formatted text'))) { 
 				$record->string[] = $field->name;				
 			} elseif (in_array($field->namedType->type_name, array('template'))) {
@@ -61,20 +72,78 @@ class TemplateQuery extends ActiveRecord {
 		}
 	}
 	
-	public static function populateRecord($record, $row) {
+	public static function getPageByURI($uri, $getGlobal = true) {
+		$sql = 'SELECT template_fields.name, template_fields.type as default_type, template_fields.default_value, template_fields.id as fields_id, '
+				. 'template_values.type, template_values.value, '
+				. 'template_classes.id as template_class_id, template_classes.name as class_name,'
+				. 'templates.id as template_id, templates.name as template_name '
+				. 'FROM `pages` '
+				. 'left join page_fields on pages.id = page_fields.page_id '
+				. 'left join templates on page_fields.template_id = templates.id '
+				. 'left join template_classes on templates.template_class_id = template_classes.id '
+				. 'left join template_fields on templates.template_class_id = template_fields.template_class_id '
+				. 'left join template_values on (templates.id = template_values.template_id and template_fields.name = template_values.name) '
+				. 'WHERE pages.url = :url';
+		if ($getGlobal) {
+			$sql .= ' or url=""';
+		}
+		$fields = Yii::$app->getDb()->createCommand($sql, [':url' => $uri])->queryAll(\PDO::FETCH_OBJ);
+		// arrange fields to objects
+		$objects = array();
+		foreach ($fields as $f) {
+			$id = $f->template_id;
+			if (! isset($objects[$id])) {
+				$objects[$id] = array(
+					'fields' => array(),
+					'values' => array(),
+					// it's a hack, probably we should rearrange the code or something?
+					'row' => array(
+						'id' => $f->template_id,
+						'template_class_id' => array(
+							'id' => $f->template_class_id,
+							'name' => $f->class_name,
+						)
+					),
+				);
+			}
+			$objects[$id]['values'][] = $f;
+			$objects[$id]['fields'][] = (object) array(
+				'id' => $f->fields_id,
+				'default_value' => $f->default_value,
+				'name' => $f->name,
+				'template_class_id' => $f->template_class_id,
+				'type' => $f->default_type,
+			);
+		}
+		// now create objects and populate 'em
+		$result = array();
+		foreach ($objects as $o) {
+			$r = new TemplateQuery();
+			$values = (object) $o['values'];
+			TemplateQuery::populateRecord($r, $o['row'], $values, $o['fields']);
+			$result[] = $r;
+		}
+//		print_r($fields); die();
+//		print_r($result); die();
+		return $result;
+	}
+	
+	public static function populateRecord($record, $row, $values = null, $fields = null) {
 		// initialize object with fields
 		$id = $row['id'];
 		TemplateQuery::_setClass($record, $row['template_class_id']);
 		// populate values
-		$fields = TemplateValues::find()->where(['template_id' => $id])->all();
+		if (! isset($values)) {
+			$values = TemplateValues::find()->where(['template_id' => $id])->all();
+		}
 		$row = $record->data;
 		$row['id'] = $id;
-		foreach ($fields as $field) {
-			$row[$field->name] = $field->value;
-			$record->data[$field->name] = $field->value;
-			if (! empty($field->type)) { $record->types[$field->name] = $field->type; }
+		foreach ($values as $value) {
+			$row[$value->name] = $value->value;
+			$record->data[$value->name] = $value->value;
+			if (! empty($value->type)) { $record->types[$value->name] = $value->type; }
 		}
-		parent::populateRecord($record, $row);		
+		parent::populateRecord($record, $row, $fields);		
 	}
 	
 	public function attributes() {
@@ -138,6 +207,7 @@ class TemplateQuery extends ActiveRecord {
 				$template = new Templates();
 				$template->template_class_id = $this->classID;
 				if (! $template->save()) {
+					// TODO: i can't set errors, it's read-only property. Google it out
 					$this->errors = $template->errors;
 					throw new Exception('template save fault');
 				}

@@ -75,10 +75,6 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    public function actionTest() {
-        return Yii::$app->request->baseUrl;
-    }
-
     /**
      * Logs in a user.
      *
