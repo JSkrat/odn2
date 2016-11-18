@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\redactor\RedactorModule;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TemplateValues */
@@ -16,13 +17,14 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 	<div class="template-values-form">
 		<!--<pre><?php print_r($model); ?></pre>-->
 		<?php $form = ActiveForm::begin(); ?>
+			<?php echo $form->field($model, 'name')->textInput(); ?>
 			<?php foreach ($fields as $f): 
 				switch ($f->namedType->type_name) {
 				case 'text':
 					echo $form->field($model, $f->name)->textInput();
 					break;
 				case 'formatted text':
-					echo $form->field($model, $f->name)->textarea();
+					echo $form->field($model, $f->name)->widget(\yii\redactor\widgets\Redactor::className());
 					break;
 				case 'template':
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name]);

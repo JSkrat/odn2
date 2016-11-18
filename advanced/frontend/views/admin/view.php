@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\TemplateValues */
 
-$this->title = $this->render('classtpl/' . $model->className, ['data' => $model]);
+$this->title = $model->name; //$this->render('classtpl/' . $model->className, ['data' => $model]);
 $this->params['breadcrumbs'][] = ['label' => 'Classes', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->className, 'url' => ['index', 'class' => $model->classID]];
 $this->params['breadcrumbs'][] = $this->title;
@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+	<!--<pre><?php print_r($model->allFields); ?></pre>-->
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => $model->allFields,

@@ -21,13 +21,14 @@ class TemplateQuery extends ActiveRecord {
 	public $classID; // TODO: create getter instead of public property
 	public $template_class_id; // TODO: create getter instead of public property
 	public $className; // TODO: create getter instead of public property
-	public $allFields = array();
-	public $data = array();
-	public $types = array(); // TODO: create getter instead of public property
-	private $labels = array();
+	//public $name;
+	public $allFields = array('name');
+	public $data = array('name' => '');
+	public $types = array('name' => 1); // TODO: create getter instead of public property
+	private $labels = array('name' => '[Name]');
 	private $required = array();
 	private $integer = array();
-	private $string = array();
+	private $string = array('name');
 	public $id;
 	
 	/**
@@ -70,6 +71,7 @@ class TemplateQuery extends ActiveRecord {
 				$record->integer[] = $field->name;
 			}
 		}
+//		print_r($record->allFields); die();
 	}
 	
 	public static function getPageByURI($uri, $getGlobal = true) {
@@ -93,27 +95,26 @@ class TemplateQuery extends ActiveRecord {
 		foreach ($fields as $f) {
 			$id = $f->template_id;
 			if (! isset($objects[$id])) {
-				$objects[$id] = array(
-					'fields' => array(),
-					'values' => array(),
-					// it's a hack, probably we should rearrange the code or something?
-					'row' => array(
-						'id' => $f->template_id,
-						'template_class_id' => array(
+				$objects[$id] = [
+					'fields' => [],
+					'values' => [],
+					// it looks like a hack, probably we should rearrange the code or something?
+					'row' => ['id' => $f->template_id,
+						'template_class_id' => [
 							'id' => $f->template_class_id,
 							'name' => $f->class_name,
-						)
-					),
-				);
+						],
+						'name' => $f->template_name,
+					],
+				];
 			}
 			$objects[$id]['values'][] = $f;
-			$objects[$id]['fields'][] = (object) array(
-				'id' => $f->fields_id,
+			$objects[$id]['fields'][] = (object) ['id' => $f->fields_id,
 				'default_value' => $f->default_value,
 				'name' => $f->name,
 				'template_class_id' => $f->template_class_id,
 				'type' => $f->default_type,
-			);
+				];
 		}
 		// now create objects and populate 'em
 		$result = array();
@@ -129,8 +130,10 @@ class TemplateQuery extends ActiveRecord {
 	}
 	
 	public static function populateRecord($record, $row, $values = null, $fields = null) {
+//		print_r($row); die();
 		// initialize object with fields
 		$id = $row['id'];
+		$name = $row['name'];
 		TemplateQuery::_setClass($record, $row['template_class_id']);
 		// populate values
 		if (! isset($values)) {
@@ -138,11 +141,13 @@ class TemplateQuery extends ActiveRecord {
 		}
 		$row = $record->data;
 		$row['id'] = $id;
+		$row['name'] = $name;
 		foreach ($values as $value) {
 			$row[$value->name] = $value->value;
 			$record->data[$value->name] = $value->value;
 			if (! empty($value->type)) { $record->types[$value->name] = $value->type; }
 		}
+		// totally forgot why i put here third argument 0_0
 		parent::populateRecord($record, $row, $fields);		
 	}
 	
@@ -206,14 +211,17 @@ class TemplateQuery extends ActiveRecord {
 			if (empty($this->id)) {
 				$template = new Templates();
 				$template->template_class_id = $this->classID;
-				if (! $template->save()) {
-					// TODO: i can't set errors, it's read-only property. Google it out
-					$this->errors = $template->errors;
-					throw new Exception('template save fault');
-				}
-				$this->id = $template->id;
+			} else {
+				$template = Templates::findOne($this->id);
 			}
-			foreach ($this->allFields as $fieldname) {
+			$template->name = $this->name;
+			if (! $template->save()) {
+				// TODO: i can't set errors, it's read-only property. Google it out
+				$this->errors = $template->errors;
+				throw new Exception('template save fault');
+			}
+			$this->id = $template->id;
+			foreach ($this->allFields as $fieldname) if ('name' != $fieldname) {
 				$model = TemplateValues::findOne(['template_id' => $this->id, 'name' => $fieldname]);
 				if (null === $model) {
 					$model = new TemplateValues();

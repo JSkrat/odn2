@@ -6,8 +6,15 @@
  * and open the template in the editor.
  */
 
-$article = '<i>no text here</i>';
+$article = '';
 if (isset($templates['article'])) $article = $templates['article']->value;
 
 ?>
 <?= $article ?>
+
+Страницы категории:
+<ul>
+<?php foreach ($this->params['menus']['pagelist']['children'] as $pagelink): ?>
+	<li><a href='<?= $pagelink['link']->url ?>'><?= $pagelink['menuitem']->caption ?></a></li>
+<?php endforeach; ?>
+</ul>

@@ -7,16 +7,16 @@ use frontend\models\Pages;
 
 class PageController extends \yii\web\Controller
 {
+//	public $defaultAction = 'index';
+	
     public function actionIndex($uri = 'home')
     {
-//		$globalPage = TemplateQuery::getPageByURI('');
-//		$globalFields = TemplateQuery::findAll(['page_id' => $globalPage->id]);
 		$templates = TemplateQuery::getPageByURI($uri);
 		$page = Pages::findOne(array('url' => $uri));
 //		print_r($page); die();
-//		$pageFields = TemplateQuery::findAll(['page_id' => $page->id]);
 		$tree = array(); // all child items. Key - parent id
 		$ids = array(); $request = array(); $pageRequest = array();
+		$templatesByName = array();
 		foreach ($templates as $f) {
 			$ids[$f->id] = $f;
 			if (isset($request[$f->id])) {
@@ -53,24 +53,34 @@ class PageController extends \yii\web\Controller
 				} else {
 					$tree[$f->id] = array('parent' => $f, 'children' => array());
 				}
+			} else {
+				// for all other templates
+				if (isset($f->name)) {
+					$templatesByName[$f->name] = $f;
+					$this->view->params[$f->name] = $f->value;
+				}
 			}
 			// insert all custom fields into params
-			if('customfield' == $f->className) {
-				$this->view->params[$f->name] = $f->value;
-			}
+//			if('customfield' == $f->className) {
+//				$this->view->params[$f->name] = $f->value;
+//			}
 		}
 		$menus = array();
 		foreach ($tree as $menu) {
 			$menus[$menu['parent']->name] = $menu;
 		}
 //		print_r($page); die();
+		// for layout view
 		$this->view->params['menus'] = $menus;
 //		print_r($templates);
 //		print_r($this->view->params); die();
         return $this->render($page->template, [
 			'logo' => 'My Pony',
-//			'menus' => $menus,
+			'templates' => $templatesByName,
 			]);
     }
 
+	public function actionNya() {
+		return 'Няя!';
+	}
 }

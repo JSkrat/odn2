@@ -53,7 +53,7 @@ class AdminController extends Controller
 			]);
 			return $this->render('index', [
 				'dataProvider' => $dataProvider,
-				'fields' => array_merge(['id'], TemplateFields::find()->select('name')->where(['template_class_id' => $class])->column()),
+				'fields' => array_merge(['id', 'name'], TemplateFields::find()->select('name')->where(['template_class_id' => $class])->column()),
 				'classModel' => TemplateClasses::findOne($class),
 			]);
 		} else {
@@ -139,7 +139,7 @@ class AdminController extends Controller
 					);
 				}
 				$allowedClasses[$f->name] = $ca;
-			}
+			} //elseif ('')
 		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 			// we need to save page relations here

@@ -3,7 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-use yii\helpers\Html;
+use yii\bootstrap\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -26,21 +26,21 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
 
 <div class="wrap">
-	<div class="">
-		<div class="left"><?= $this->params['left logo'] ?></div>
-		<div class="center"><?= $this->params['center logo'] ?></div>
-		<div class="right">search</div>
-	</div>
+	<div class="container-fluid"><div class="row">
+		<div class="pull-left"><?= $this->params['logo'] ?></div>
+		<div class="center-block"><?= $this->params['header'] ?></div>
+		<div class="pull-right">search</div>
+	</div></div>
     <?php
     NavBar::begin([
-//        'brandLabel' => $this->params['center logo'],
+        'brandLabel' => false,
 //        'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class' => '',
         ],
     ]);
 	$menuItems = array();
-	foreach ($this->params['menus']['upper menu']['children'] as $item) {
+	foreach ($this->params['menus']['navmenu']['children'] as $item) {
 		$menuItems[] = array(
 			'label' => ' ' . $item['menuitem']->caption . ' ',
 			'url' => $item['link']->url,
