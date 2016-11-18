@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace frontend\models;
 
 use Yii;
 
@@ -56,7 +56,10 @@ class Tags extends \yii\db\ActiveRecord
         return $this->hasOne(Pages::className(), ['id' => 'page_id']);
     }
 	
-	public function getPages() {
-		return $this->find()->select(array_keys(Pages::attributeLabels()))->where(['tag' => $this->tag])->leftJoin('pages', ['pages.id' => 'page_id']);
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+	static public function getPages($tag) {
+		return Pages::find()->select('pages.*')->leftJoin('tags', 'pages.id = page_id')->where(['tag' => $tag]);
 	}
 }

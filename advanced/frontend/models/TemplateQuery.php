@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace app\models;
+namespace frontend\models;
 use Yii;
 use yii\db\ActiveRecord;
 use frontend\models\Templates;

@@ -7,7 +7,7 @@ use Yii;
 use frontend\models\TemplateValues;
 use frontend\models\TemplateClasses;
 use frontend\models\TemplateFields;
-use app\models\TemplateQuery;
+use frontend\models\TemplateQuery;
 use yii\data\ActiveDataProvider;
 //use yii\data\ArrayDataProvider;
 use yii\web\Controller;

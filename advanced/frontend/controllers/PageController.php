@@ -2,8 +2,9 @@
 
 namespace frontend\controllers;
 
-use app\models\TemplateQuery;
+use frontend\models\TemplateQuery;
 use frontend\models\Pages;
+use frontend\models\Tags;
 
 class PageController extends \yii\web\Controller
 {
@@ -13,6 +14,9 @@ class PageController extends \yii\web\Controller
     {
 		$templates = TemplateQuery::getPageByURI($uri);
 		$page = Pages::findOne(array('url' => $uri));
+		// search for children pages if it is a category page
+		// query will be executed in template itself, if it really needs them
+		$childPages = Tags::getPages('category:' . $page->id);
 //		print_r($page); die();
 		$tree = array(); // all child items. Key - parent id
 		$ids = array(); $request = array(); $pageRequest = array();
@@ -60,10 +64,6 @@ class PageController extends \yii\web\Controller
 					$this->view->params[$f->name] = $f->value;
 				}
 			}
-			// insert all custom fields into params
-//			if('customfield' == $f->className) {
-//				$this->view->params[$f->name] = $f->value;
-//			}
 		}
 		$menus = array();
 		foreach ($tree as $menu) {
@@ -77,6 +77,7 @@ class PageController extends \yii\web\Controller
         return $this->render($page->template, [
 			'logo' => 'My Pony',
 			'templates' => $templatesByName,
+			'childPages' => $childPages,
 			]);
     }
 

@@ -15,6 +15,7 @@ use Yii;
  *
  * @property PageFields[] $pageFields
  * @property Templates[] $templates
+ * @property Tags[] $tags
  */
 class Pages extends \yii\db\ActiveRecord
 {
@@ -67,4 +68,12 @@ class Pages extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Templates::className(), ['page_id' => 'id']);
     }
+	
+	/**
+    * @return \yii\db\ActiveQuery
+    */
+   public function getTags()
+   {
+       return $this->hasMany(Tags::className(), ['page_id' => 'id']);
+   }
 }

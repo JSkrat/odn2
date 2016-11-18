@@ -6,7 +6,6 @@
  * and open the template in the editor.
  */
 
-// even category is just a page, so why it can't have a little text?
 $article = '';
 if (isset($templates['article'])) $article = $templates['article']->value;
 
@@ -15,7 +14,7 @@ if (isset($templates['article'])) $article = $templates['article']->value;
 
 Страницы категории:
 <ul>
-<?php foreach ($childPages->all() as $page): ?>
-	<li><a href='<?= $page->url ?>'><?= $page->title ?></a></li>
+<?php foreach ($this->params['menus']['pagelist']['children'] as $pagelink): ?>
+	<li><a href='<?= $pagelink['link']->url ?>'><?= $pagelink['menuitem']->caption ?></a></li>
 <?php endforeach; ?>
 </ul>

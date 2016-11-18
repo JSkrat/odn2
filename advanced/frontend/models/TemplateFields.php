@@ -3,7 +3,7 @@
 namespace frontend\models;
 
 use Yii;
-use app\models\TemplateQuery;
+use frontend\models\TemplateQuery;
 
 /**
  * This is the model class for table "template_fields".
