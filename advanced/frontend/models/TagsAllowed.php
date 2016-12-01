@@ -11,7 +11,7 @@ use Yii;
  * @property string $tag
  * @property integer $template_field_id
  *
- * @property TemplateFields $templateField
+ * @property ObjectFields $templateField
  */
 class TagsAllowed extends \yii\db\ActiveRecord
 {
@@ -32,7 +32,7 @@ class TagsAllowed extends \yii\db\ActiveRecord
             [['tag', 'template_field_id'], 'required'],
             [['tag'], 'string'],
             [['template_field_id'], 'integer'],
-            [['template_field_id'], 'exist', 'skipOnError' => true, 'targetClass' => TemplateFields::className(), 'targetAttribute' => ['template_field_id' => 'id']],
+            [['template_field_id'], 'exist', 'skipOnError' => true, 'targetClass' => ObjectFields::className(), 'targetAttribute' => ['template_field_id' => 'id']],
         ];
     }
 
@@ -53,6 +53,6 @@ class TagsAllowed extends \yii\db\ActiveRecord
      */
     public function getTemplateField()
     {
-        return $this->hasOne(TemplateFields::className(), ['id' => 'template_field_id']);
+        return $this->hasOne(ObjectFields::className(), ['id' => 'template_field_id']);
     }
 }

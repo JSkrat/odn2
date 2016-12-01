@@ -10,11 +10,12 @@ use Yii;
  * @property integer $id
  * @property string $created
  * @property string $title
- * @property string $template
+ * @property integer $template
  * @property string $url
  *
  * @property PageFields[] $pageFields
- * @property Templates[] $templates
+ * @property Objects[] $objects
+ * @property Templates $template
  * @property Tags[] $tags
  */
 class Pages extends \yii\db\ActiveRecord
@@ -34,8 +35,10 @@ class Pages extends \yii\db\ActiveRecord
     {
         return [
             [['created'], 'safe'],
-            [['title', 'template', 'url'], 'required'],
-            [['title', 'template', 'url'], 'string'],
+            [['title', 'url'], 'required'],
+            [['title', 'url'], 'string'],
+            [['template_id'], 'integer'],
+            [['template_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['template_id' => 'id']],
         ];
     }
 
@@ -48,7 +51,7 @@ class Pages extends \yii\db\ActiveRecord
             'id' => 'ID',
             'created' => 'Created',
             'title' => 'Title',
-            'template' => 'Template',
+            'template_id' => 'Template ID',
             'url' => 'Url',
         ];
     }
@@ -64,16 +67,24 @@ class Pages extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTemplates()
+    public function getObjects()
     {
-        return $this->hasMany(Templates::className(), ['page_id' => 'id']);
+        return $this->hasMany(Objects::className(), ['id' => 'object_id'])->viaTable('page_fields', ['page_id' => 'id']);
     }
-	
-	/**
-    * @return \yii\db\ActiveQuery
-    */
-   public function getTags()
-   {
-       return $this->hasMany(Tags::className(), ['page_id' => 'id']);
-   }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTemplate()
+    {
+        return $this->hasOne(Templates::className(), ['id' => 'template_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTags()
+    {
+        return $this->hasMany(Tags::className(), ['page_id' => 'id']);
+    }
 }

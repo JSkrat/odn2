@@ -5,7 +5,7 @@ namespace frontend\models;
 /**
  * This is the ActiveQuery class for [[TemplateValues]].
  *
- * @see TemplateValues
+ * @see ObjectValues
  */
 class FieldTypesQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class FieldTypesQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return TemplateValues[]|array
+     * @return ObjectValues[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class FieldTypesQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return TemplateValues|array|null
+     * @return ObjectValues|array|null
      */
     public function one($db = null)
     {

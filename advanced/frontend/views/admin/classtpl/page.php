@@ -1,1 +1,1 @@
-<?= $data['title'] ?>
+<?= $data['name'] ?>

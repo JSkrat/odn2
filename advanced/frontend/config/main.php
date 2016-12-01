@@ -45,7 +45,13 @@ return [
 				'<uri>' => 'page/index',
             ],
         ],
-        
+        'i18n' => [
+			'translations' => [
+				'frontend*' => [
+					'class' => 'yii\i18n\PhpMessageSource',
+				],
+			],
+		],
     ],
 	'defaultRoute' => 'page/index',
     'params' => $params,

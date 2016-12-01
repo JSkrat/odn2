@@ -4,10 +4,10 @@ namespace frontend\controllers;
 
 use Yii;
 //use frontend\models\Templates;
-use frontend\models\TemplateValues;
-use frontend\models\TemplateClasses;
-use frontend\models\TemplateFields;
-use frontend\models\TemplateQuery;
+use frontend\models\ObjectValues;
+use frontend\models\Classes;
+use frontend\models\ObjectFields;
+use frontend\models\ObjectQuery;
 use yii\data\ActiveDataProvider;
 //use yii\data\ArrayDataProvider;
 use yii\web\Controller;
@@ -49,16 +49,16 @@ class AdminController extends Controller
     {
 		if ($class) {
 			$dataProvider = new ActiveDataProvider([
-				'query' => TemplateQuery::find()->where(['template_class_id' => $class]),
+				'query' => ObjectQuery::find()->where(['class_id' => $class]),
 			]);
 			return $this->render('index', [
 				'dataProvider' => $dataProvider,
-				'fields' => array_merge(['id', 'name'], TemplateFields::find()->select('name')->where(['template_class_id' => $class])->column()),
-				'classModel' => TemplateClasses::findOne($class),
+				'fields' => array_merge(['id', 'name'], ObjectFields::find()->select('name')->where(['class_id' => $class])->column()),
+				'classModel' => Classes::findOne($class),
 			]);
 		} else {
 			$dataProvider = new ActiveDataProvider([
-				'query' => TemplateClasses::find(),
+				'query' => Classes::find(),
 			]);
 			return $this->render('index', [
 				'dataProvider' => $dataProvider,
@@ -87,7 +87,7 @@ class AdminController extends Controller
      */
     public function actionCreate()
     {
-        $model = new TemplateValues();
+        $model = new ObjectValues();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -105,52 +105,58 @@ class AdminController extends Controller
 	 * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($class = 0, $id = 0) {
+    public function actionUpdate($class = 0, $id = 0, $page = null, $block = false) {
 		if ($id) {
 			$model = $this->findModel($id);
 			$class = $model->classID;
 		} else {
-			$model = new TemplateQuery();
+			$model = new ObjectQuery();
 			$model->setClass($class);
+			$model->name = Yii::$app->request->get('name', '');
 		}
-		$classModel = TemplateClasses::findOne($class);
+		$classModel = Classes::findOne($class);
 		if (null === $classModel) { throw new NotFoundHttpException('The requested page does not exist.'); }
 		$allPagesList = array();
 		$allPagesCheckboxen = array();
-		$checkedPages = array_flip(PageFields::find()->where(['template_id' => $model->id])->select('page_id')->column());
-		foreach (Pages::find()->all() as $page) {
-			$caption = "{$page->title} ({$page->url})";
-			$allPagesCheckboxen[$page->id] = array(
+		$checkedPages = array_flip(PageFields::find()->where(['object_id' => $model->id])->select('page_id')->column());
+		foreach (Pages::find()->all() as $p) {
+			$caption = "{$p->title} ({$p->url})";
+			if (isset($page)) { $checked = $page == $p->id; }
+			else { $checked = isset($checkedPages[$p->id]); }
+			$allPagesCheckboxen[$p->id] = array(
 				'caption' => $caption,
-				'checked' => (isset($checkedPages[$page->id])),
+				'checked' => $checked,
 			);
-			$allPagesList[$page->id] = $caption;
+			$allPagesList[$p->id] = $caption;
 		}
-		$fields = TemplateFields::find()->where(['template_class_id' => $class])->all();
+		$fields = ObjectFields::find()->where(['class_id' => $class])->all();
 		$allowedClasses = array();
 		foreach ($fields as $f) {
-			if ('template' == $f->namedType->type_name) {
+			if ('object' == $f->namedType->type_name) {
 				$ca = array();
 				foreach ($f->allowedObjects as $classAllowed) {
-					if (! array_key_exists($classAllowed->templateClass->name, $ca)) { $ca[$classAllowed->templateClass->name] = array(); }
-					$ca[$classAllowed->templateClass->name][$classAllowed->id] = $this->renderPartial(
-							'classtpl/' . $classAllowed->templateClass->name,
-							['data' => $classAllowed]
-					);
+					if (! array_key_exists($classAllowed->class->name, $ca)) { $ca[$classAllowed->class->name] = array(); }
+					$ca[$classAllowed->class->name][$classAllowed->id] = $classAllowed->name;/*$this->renderPartial(
+							'classtpl/' . $classAllowed->class->name,
+							['data' => $classAllowed->class]
+					);*/
 				}
 				$allowedClasses[$f->name] = $ca;
 			} //elseif ('')
 		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 			// we need to save page relations here
-			$pages = Yii::$app->request->post()['pages'];
+			// fuck! Why ?? operator only in php7? =(
+			$pages = Yii::$app->request->post();
+			if (isset($pages['pages'])) { $pages = $pages['pages']; }
+			else { $pages = []; }
 			$transaction = PageFields::getDb()->transaction(function ($db) use ($model, $pages) {
-				PageFields::deleteAll(['template_id' => $model->id]);
+				PageFields::deleteAll(['object_id' => $model->id]);
 				$rows = array();
 				foreach ($pages as $page => $value) {
 					$rows[] = array(
 						'page_id' => $page,
-						'template_id' => $model->id,
+						'object_id' => $model->id,
 					);
 				}
 //				print_r($rows); die();
@@ -166,6 +172,7 @@ class AdminController extends Controller
 				'allowedClasses' => $allowedClasses,
 				'allPagesList' => $allPagesList,
 				'allPagesCheckboxen' => $allPagesCheckboxen,
+				'block' => (boolean) $block,
             ]);
         }
     }
@@ -178,13 +185,15 @@ class AdminController extends Controller
      */
     public function actionDelete($id)
     {
-        $template = $this->findModel($id);
-		$classID = $template->classID;
-		$d = $template->delete();
+        $object = $this->findModel($id);
+		$classID = $object->classID;
+		$d = $object->delete();
 		if (! $d) {
-			print_r($d); echo '<br/>';
-			print_r($template); echo '<br/>';
-			print_r($template->errors);
+			echo "не удалось удалить, чёт не так (AdminController:actionDelete)<br/>\n";
+			print_r($d); echo " - deleted rows<br/>\nAR object:\n";
+			print_r($object); echo "<br/>\n";
+			echo $object->beforeDelete();
+//			echo $object->create
 			die('fuck!');
 		}
         return $this->redirect(['index', 'class' => $classID]);
@@ -194,12 +203,12 @@ class AdminController extends Controller
      * Finds the TemplateValues model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return TemplateValues the loaded model
+     * @return ObjectValues the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = TemplateQuery::findOne($id)) !== null) {
+        if (($model = ObjectQuery::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

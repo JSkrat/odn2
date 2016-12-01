@@ -16,8 +16,9 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
     <h1><?= Html::encode($this->title) ?></h1>
 	<div class="template-values-form">
 		<!--<pre><?php print_r($model); ?></pre>-->
+		<!--<pre><?php print_r($fields); ?></pre>-->
 		<?php $form = ActiveForm::begin(); ?>
-			<?php echo $form->field($model, 'name')->textInput(); ?>
+			<?php echo $form->field($model, 'name')->textInput(['readonly' => $block]); ?>
 			<?php foreach ($fields as $f): 
 				switch ($f->namedType->type_name) {
 				case 'text':
@@ -26,7 +27,7 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 				case 'formatted text':
 					echo $form->field($model, $f->name)->widget(\yii\redactor\widgets\Redactor::className());
 					break;
-				case 'template':
+				case 'object':
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name]);
 					break;
 				case 'page':
@@ -37,10 +38,11 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 			<?php endforeach; ?>
 			<hr>
 			<ul>
+				<?php if ($block) $ro = 'disabled=true'; else $ro = ''; ?>
 				<?php foreach ($allPagesCheckboxen as $id => $page): ?>
 				<li>
 					<label for="page_<?= $id ?>">
-						<input type="checkbox" name="pages[<?= $id ?>]" id="page_<?= $id ?>" <?= ($page['checked'])? 'checked': '' ?> >
+						<input type="checkbox" name="pages[<?= $id ?>]" id="page_<?= $id ?>" <?= ($page['checked'])? 'checked': '' ?> <?= $ro ?> >
 						<?= $page['caption'] ?>
 					</label>
 				</li>

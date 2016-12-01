@@ -8,10 +8,10 @@ use Yii;
  * This is the model class for table "page_fields".
  *
  * @property integer $page_id
- * @property integer $template_id
+ * @property integer $object_id
  *
  * @property Pages $page
- * @property Templates $template
+ * @property Objects $template
  */
 class PageFields extends \yii\db\ActiveRecord
 {
@@ -29,11 +29,11 @@ class PageFields extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['page_id', 'template_id'], 'required'],
-            [['page_id', 'template_id'], 'integer'],
-            [['page_id', 'template_id'], 'unique', 'targetAttribute' => ['page_id', 'template_id'], 'message' => 'The combination of Page ID and Template ID has already been taken.'],
+            [['page_id', 'object_id'], 'required'],
+            [['page_id', 'object_id'], 'integer'],
+            [['page_id', 'object_id'], 'unique', 'targetAttribute' => ['page_id', 'object_id'], 'message' => 'The combination of Page ID and Template ID has already been taken.'],
             [['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pages::className(), 'targetAttribute' => ['page_id' => 'id']],
-            [['template_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['template_id' => 'id']],
+            [['object_id'], 'exist', 'skipOnError' => true, 'targetClass' => Objects::className(), 'targetAttribute' => ['object_id' => 'id']],
         ];
     }
 
@@ -44,7 +44,7 @@ class PageFields extends \yii\db\ActiveRecord
     {
         return [
             'page_id' => 'Page ID',
-            'template_id' => 'Template ID',
+            'object_id' => 'Object ID',
         ];
     }
 
@@ -61,6 +61,6 @@ class PageFields extends \yii\db\ActiveRecord
      */
     public function getTemplate()
     {
-        return $this->hasOne(Templates::className(), ['id' => 'template_id']);
+        return $this->hasOne(Objects::className(), ['id' => 'object_id']);
     }
 }

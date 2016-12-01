@@ -8,14 +8,11 @@ use Yii;
  * This is the model class for table "templates".
  *
  * @property integer $id
- * @property integer $template_class_id
  * @property string $name
- * @property integer $group_id
  *
- * @property TemplateValues[] $templateValues
- * @property TemplateFields[] $names
- * @property Pages $pages
- * @property TemplateClasses $templateClass
+ * @property Pages[] $pages
+ * @property TemplateClasses[] $templateClasses
+ * @property Classes[] $classes
  */
 class Templates extends \yii\db\ActiveRecord
 {
@@ -33,11 +30,8 @@ class Templates extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['template_class_id'], 'required'],
-            [['template_class_id', 'group_id'], 'integer'],
-            [['name'], 'string', 'max' => 64],
-//			[['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['page_id' => 'id']],
-            [['template_class_id'], 'exist', 'skipOnError' => true, 'targetClass' => TemplateClasses::className(), 'targetAttribute' => ['template_class_id' => 'id']],
+            [['name'], 'required'],
+            [['name'], 'string'],
         ];
     }
 
@@ -48,41 +42,31 @@ class Templates extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-//			'page_id' => 'Page ID',
-            'template_class_id' => 'Template Class ID',
             'name' => 'Name',
-            'group_id' => 'Group ID',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTemplateValues()
+    public function getPages()
     {
-        return $this->hasMany(TemplateValues::className(), ['template_id' => 'id']);
+        return $this->hasMany(Pages::className(), ['template_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getNames()
+    public function getTemplateClasses()
     {
-        return $this->hasMany(TemplateFields::className(), ['name' => 'name'])->viaTable('template_values', ['template_id' => 'id']);
+        return $this->hasMany(TemplateClasses::className(), ['template_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTemplateClass()
+    public function getClasses()
     {
-        return $this->hasOne(TemplateClasses::className(), ['id' => 'template_class_id']);
+        return $this->hasMany(Classes::className(), ['id' => 'class_id'])->viaTable('template_classes', ['template_id' => 'id']);
     }
-	
-	/**
-	 * @return \yii\db\ActiveQuery
-	 */
-//	public function getPage() {
-//		return $this->hasOne(Templates::className(), ['id' => 'page_id']);
-//	}
 }

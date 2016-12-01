@@ -2,7 +2,7 @@
 
 namespace frontend\controllers;
 
-use frontend\models\TemplateQuery;
+use frontend\models\ObjectQuery;
 use frontend\models\Pages;
 use frontend\models\Tags;
 
@@ -12,7 +12,7 @@ class PageController extends \yii\web\Controller
 	
     public function actionIndex($uri = 'home')
     {
-		$templates = TemplateQuery::getPageByURI($uri);
+		$templates = ObjectQuery::getPageByURI($uri);
 		$page = Pages::findOne(array('url' => $uri));
 		// search for children pages if it is a category page
 		// query will be executed in template itself, if it really needs them
@@ -73,8 +73,9 @@ class PageController extends \yii\web\Controller
 		// for layout view
 		$this->view->params['menus'] = $menus;
 //		print_r($templates);
+//		print_r($page->template0); die();
 //		print_r($this->view->params); die();
-        return $this->render($page->template, [
+        return $this->render($page->template->name, [
 			'logo' => 'My Pony',
 			'templates' => $templatesByName,
 			'childPages' => $childPages,

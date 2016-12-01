@@ -11,8 +11,8 @@ use Yii;
  * @property string $type_name
  *
  * @property PageFields[] $pageFields
- * @property TemplateFields[] $templateFields
- * @property TemplateValues[] $templateValues
+ * @property ObjectFields[] $templateFields
+ * @property ObjectValues[] $templateValues
  */
 class FieldTypes extends \yii\db\ActiveRecord
 {
@@ -59,7 +59,7 @@ class FieldTypes extends \yii\db\ActiveRecord
      */
     public function getTemplateFields()
     {
-        return $this->hasMany(TemplateFields::className(), ['type' => 'id']);
+        return $this->hasMany(ObjectFields::className(), ['type' => 'id']);
     }
 
     /**
@@ -67,6 +67,6 @@ class FieldTypes extends \yii\db\ActiveRecord
      */
     public function getTemplateValues()
     {
-        return $this->hasMany(TemplateValues::className(), ['type' => 'id']);
+        return $this->hasMany(ObjectValues::className(), ['type' => 'id']);
     }
 }
