@@ -12,16 +12,15 @@ class PageController extends \yii\web\Controller
 	
     public function actionIndex($uri = 'home')
     {
-		$templates = ObjectQuery::getPageByURI($uri);
-		$page = Pages::findOne(array('url' => $uri));
 		// search for children pages if it is a category page
 		// query will be executed in template itself, if it really needs them
+		$page = Pages::findOne(array('url' => $uri));
 		$childPages = Tags::getPages('category:' . $page->id);
 //		print_r($page); die();
 		$tree = array(); // all child items. Key - parent id
 		$ids = array(); $request = array(); $pageRequest = array();
-		$templatesByName = array();
-		foreach ($templates as $f) {
+		$objectsByName = array();
+		foreach (ObjectQuery::getPageByURI($uri, true) as $f) {
 			$ids[$f->id] = $f;
 			if (isset($request[$f->id])) {
 				$request[$f->id] = $f; // that is a pointer to some element in the $tree, so we're putting it into $tree
@@ -60,8 +59,13 @@ class PageController extends \yii\web\Controller
 			} else {
 				// for all other templates
 				if (isset($f->name)) {
-					$templatesByName[$f->name] = $f;
-					$this->view->params[$f->name] = $f->value;
+					$objectsByName[$f->name] = $f;
+					// have no idea what is that, but that should fix it
+					if (isset($f->value)) {
+						$this->view->params[$f->name] = $f->value;
+					} else {
+						$this->view->params[$f->name] = $f;
+					}
 				}
 			}
 		}
@@ -69,15 +73,16 @@ class PageController extends \yii\web\Controller
 		foreach ($tree as $menu) {
 			$menus[$menu['parent']->name] = $menu;
 		}
-//		print_r($page); die();
 		// for layout view
 		$this->view->params['menus'] = $menus;
-//		print_r($templates);
-//		print_r($page->template0); die();
-//		print_r($this->view->params); die();
+		// custom blocks
+		// TODO: can i integrate that into one request?
+		$this->view->params['lastPages'] = Pages::find()->orderBy('created desc')->limit(5)->all();
+		$this->view->params['popularPages'] = Pages::find()->orderBy('views desc')->limit(5)->all();
+
         return $this->render($page->template->name, [
 			'logo' => 'My Pony',
-			'templates' => $templatesByName,
+			'templates' => $objectsByName,
 			'childPages' => $childPages,
 			]);
     }

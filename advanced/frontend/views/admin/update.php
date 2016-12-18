@@ -43,6 +43,9 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 				<li>
 					<label for="page_<?= $id ?>">
 						<input type="checkbox" name="pages[<?= $id ?>]" id="page_<?= $id ?>" <?= ($page['checked'])? 'checked': '' ?> <?= $ro ?> >
+						<?php if ($block && $page['checked']): // disabled checkboxen doesn't send to server in any state ?>
+						<input type='hidden' name='pages[<?= $id ?>]' value='true' >
+						<?php endif; ?>
 						<?= $page['caption'] ?>
 					</label>
 				</li>

@@ -34,7 +34,7 @@ class ObjectValues extends \yii\db\ActiveRecord
     {
         return [
             [['type', 'object_id', 'field_id'], 'integer'],
-            [['object_id', 'field_id', 'value'], 'required'],
+            [['object_id', 'field_id'], 'required'],
             [['value'], 'string'],
             [['field_id', 'object_id'], 'unique', 'targetAttribute' => ['field_id', 'object_id'], 'message' => 'The combination of Object ID and Field ID has already been taken.'],
             [['type'], 'exist', 'skipOnError' => true, 'targetClass' => FieldTypes::className(), 'targetAttribute' => ['type' => 'id']],

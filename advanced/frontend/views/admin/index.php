@@ -14,6 +14,14 @@ if (isset($classModel)) {
 }
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<style>
+	td {
+		max-width: 100ex;
+		overflow: auto; /* optional */
+		word-wrap: break-word;
+	}
+</style>
+	
 <div class="template-values-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -24,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 	<?php endif; ?>
 	<?php
-		array_unshift($fields, ['class' => 'yii\grid\SerialColumn']);
+//		array_unshift($fields, ['class' => 'yii\grid\SerialColumn']);
 		$buttons = ['class' => 'yii\grid\ActionColumn'];
 		if (! isset($classModel)) {
 			$buttons['visibleButtons'] = ['update' => false, 'delete' => false];
@@ -39,5 +47,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => $fields,
+//		'formatter' => 
     ]); ?>
 </div>

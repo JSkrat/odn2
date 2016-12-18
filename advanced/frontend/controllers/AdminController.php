@@ -119,7 +119,7 @@ class AdminController extends Controller
 		$allPagesList = array();
 		$allPagesCheckboxen = array();
 		$checkedPages = array_flip(PageFields::find()->where(['object_id' => $model->id])->select('page_id')->column());
-		foreach (Pages::find()->all() as $p) {
+		foreach (Pages::find()->orderBy('title')->all() as $p) {
 			$caption = "{$p->title} ({$p->url})";
 			if (isset($page)) { $checked = $page == $p->id; }
 			else { $checked = isset($checkedPages[$p->id]); }
@@ -214,4 +214,8 @@ class AdminController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+	
+	public function actionImport() {
+		ObjectQuery::importFromJoomla();
+	}
 }

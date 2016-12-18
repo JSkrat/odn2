@@ -24,10 +24,10 @@ AppAsset::register($this);
 </head>
 <body>
 <?php $this->beginBody() ?>
-<div class='wrap'><div class='container-fluid'>
+<div class='wrap'><div><div class='container'>
 	<div class="row">
 		<div class="pull-left"><?= $this->params['logo'] ?></div>
-		<div class="center-block"><?= $this->params['header'] ?></div>
+		<div class="text-center"><?= $this->params['header'] ?></div>
 		<div class="pull-right">search</div>
 	</div>
 	<div class='row'>
@@ -53,13 +53,13 @@ AppAsset::register($this);
     NavBar::end();
     ?>
 	</div>
-    <div class="container row">
+    <div class="row">
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
 		<div class='col-md-3'>
-			<div class='container'>
+			<div class=''>
 				<header>Встречи ОДН</header>
 				<ul>
 <?php foreach ($this->params['menus']['meetings']['children'] as $item): ?>
@@ -67,15 +67,29 @@ AppAsset::register($this);
 <?php endforeach; ?>
 				</ul>
 			</div>
-			<div class='container'>Последние материалы</div>
-			<div class='container'>Самые читаемые</div>
+			<div class=''>
+				<header>Последние материалы</header>
+				<ul>
+<?php foreach ($this->params['lastPages'] as $item): ?>
+					<li><a href='<?= $item->url ?>'><?= $item->title ?></a></li>
+<?php endforeach; ?>
+				</ul>
+			</div>
+			<div class=''>
+				<header>Самые читаемые</header>
+				<ul>
+<?php foreach ($this->params['popularPages'] as $item): ?>
+					<li><a href='<?= $item->url ?>'><?= $item->title ?></a></li>
+<?php endforeach; ?>
+				</ul>
+			</div>
 			Наши партнёры
 		</div>
 		<div class='col-md-9'>
 			<?= $content ?>
 		</div>
     </div>
-</div></div>
+</div></div></div>
 <footer class="footer">
 	<div class="container">
 		<p class="pull-left">&copy; My Company <?= date('Y') ?></p>

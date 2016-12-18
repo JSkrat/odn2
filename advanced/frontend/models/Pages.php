@@ -10,8 +10,9 @@ use Yii;
  * @property integer $id
  * @property string $created
  * @property string $title
- * @property integer $template
+ * @property integer $template_id
  * @property string $url
+ * @property integer $views
  *
  * @property PageFields[] $pageFields
  * @property Objects[] $objects
@@ -37,7 +38,7 @@ class Pages extends \yii\db\ActiveRecord
             [['created'], 'safe'],
             [['title', 'url'], 'required'],
             [['title', 'url'], 'string'],
-            [['template_id'], 'integer'],
+            [['template_id', 'views'], 'integer'],
             [['template_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['template_id' => 'id']],
         ];
     }
@@ -53,6 +54,7 @@ class Pages extends \yii\db\ActiveRecord
             'title' => 'Title',
             'template_id' => 'Template ID',
             'url' => 'Url',
+			'views' => 'Views',
         ];
     }
 

@@ -7,6 +7,10 @@ return [
         ],
     ],
 	'modules' => [
-		'redactor' => 'yii\redactor\RedactorModule',
+		'redactor' => [
+			'class' => 'yii\redactor\RedactorModule',
+			'uploadDir' => '@webroot/images',
+			'uploadUrl' => '@web/images',
+		],
 	],
 ];
