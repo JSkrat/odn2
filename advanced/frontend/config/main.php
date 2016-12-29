@@ -53,6 +53,11 @@ return [
 			],
 		],
     ],
+	'modules' => [
+        'gallery' => [
+            'class' => 'frontend\modules\Gallery',
+        ],
+	],
 	'defaultRoute' => 'page/index',
     'params' => $params,
 ];

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\redactor\RedactorModule;
+use yii\redactor\widgets\Redactor;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TemplateValues */
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 					echo $form->field($model, $f->name)->textInput();
 					break;
 				case 'formatted text':
-					echo $form->field($model, $f->name)->widget(\yii\redactor\widgets\Redactor::className());
+					echo $form->field($model, $f->name)->widget(Redactor::className());
 					break;
 				case 'object':
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name]);

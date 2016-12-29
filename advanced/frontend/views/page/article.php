@@ -7,7 +7,7 @@
  */
 
 $article = '<i>no text here</i>';
-if (isset($templates['article'])) $article = $templates['article']->value;
+if (isset($objects['article'])) $article = $objects['article']->value;
 
 ?>
 <?= $article ?>

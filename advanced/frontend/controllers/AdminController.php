@@ -218,4 +218,8 @@ class AdminController extends Controller
 	public function actionImport() {
 		ObjectQuery::importFromJoomla();
 	}
+	
+	public function actionGalleries() {
+		ObjectQuery::createGalleries();
+	}
 }

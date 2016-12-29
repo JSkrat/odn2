@@ -12,5 +12,9 @@ return [
 			'uploadDir' => '@webroot/images',
 			'uploadUrl' => '@web/images',
 		],
+		'imagegallery' => [
+			'class' => 'dosamigos\gallery\Gallery',
+			
+		]
 	],
 ];

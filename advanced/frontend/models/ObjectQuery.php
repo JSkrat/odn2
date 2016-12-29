@@ -282,6 +282,26 @@ class ObjectQuery extends ActiveRecord {
 		$t->save();
 	}
 	
+	/*
+	 * @text article text
+	 * @return fixed text
+	 */
+	public static function resolveTags($newlist, $text, $pageID) {
+		$galleries = explode('{gallery}', $text);
+		// we don't need text before first gallery
+		$value = array_shift($galleries);
+		foreach ($galleries as $g) {
+			$g = explode('{/gallery}', $g);
+			$value .= $g[1];
+			$list = clone $newlist;
+			$list->value = 'images/' . explode(',', $g[0])[0];
+			$list->save(false);
+			ObjectQuery::addToPage($list->id, $pageID);
+		}
+		// cheat: we name urls like they was, so just regexp would be enough to fix links
+		return preg_replace('(href="index.php/([^/]+/)*([^"]+)")', 'href="$2"', $value);
+	}
+	
 	/**
      * one-use method for import all data from hardcoded joomla database into our database
 	 * it's not official import method cause it doesn't touch any menues
@@ -331,7 +351,7 @@ class ObjectQuery extends ActiveRecord {
 				$page->created = $cat->created_time;
 				$page->title = $cat->title;
 				$page->template_id = 2; // category
-				$page->url = $cat->alias . '-' . $cat->id;
+				$page->url = $cat->id . '-' . $cat->alias;
 				$page->save();
 				$categorymap[$cat->id] = $page->id;
 				$pagemeta = clone $newpagemeta;
@@ -341,7 +361,7 @@ class ObjectQuery extends ActiveRecord {
 				$pagemeta->save(false);
 				ObjectQuery::addToPage($pagemeta->id, $page->id);
 				$desc = clone $newbigtext;
-				$desc->value = $cat->description;
+				$desc->value = $cat->description; // hope there are no links, galleries or videos
 				$desc->save(false);
 				ObjectQuery::addToPage($desc->id, $page->id);
 				// tags: for nested categories
@@ -370,12 +390,21 @@ class ObjectQuery extends ActiveRecord {
 			$newbigtext = new ObjectQuery();
 			$newbigtext->setClass(6); // big text
 			$newbigtext->name = 'article';
+			$newlist = new ObjectQuery();
+			$newlist->setClass(5); // customfield
+			$newlist->module = 'Gallery:default/images';
+			$newlist->name = 'list';
+//			$oldPageID = [];
 			foreach (Yii::$app->getDb()->createCommand($sql)->queryAll(\PDO::FETCH_OBJ) as $art) {
 				$page = new Pages();
 				$page->created = $art->created;
 				$page->title = $art->title;
-				$page->template_id = 1; // article
-				$page->url = $art->alias . '-' . $art->id;
+				if (count(explode('{gallery}', $art->introtext . $art->fulltext)) > 1) {
+					$page->template_id = 3; // gallery
+				} else {
+					$page->template_id = 1; // article
+				}
+				$page->url = $art->id . '-' . $art->alias;
 				$page->views = $art->hits;
 				$page->save();
 				$pagemeta = clone $newpagemeta;
@@ -386,11 +415,11 @@ class ObjectQuery extends ActiveRecord {
 				ObjectQuery::addToPage($pagemeta->id, $page->id);
 				$cont = clone $newbigtext;
 				if (empty($art->fulltext)) {
-					$cont->value = $art->introtext;
 					$cont->intro = '';
+					$cont->value = ObjectQuery::resolveTags($newlist, $art->introtext, $page->id);
 				} else {
-					$cont->intro = $art->introtext;
-					$cont->value = $art->fulltext;
+					$cont->intro = ObjectQuery::resolveTags($newlist, $art->introtext, $page->id);
+					$cont->value = ObjectQuery::resolveTags($newlist, $art->fulltext, $page->id);
 				}
 				$cont->save(false);
 				ObjectQuery::addToPage($cont->id, $page->id);
@@ -407,7 +436,36 @@ class ObjectQuery extends ActiveRecord {
      */
 	public static function createGalleries() {
 		$transaction = ObjectQuery::getDb()->transaction(function () {
-			
+			$sql = 'select pages.id as page_id, object_values.id as val_id, object_values.value '
+					. 'from pages '
+					. 'left join page_fields on pages.id = page_fields.page_id '
+					. 'left join objects on page_fields.object_id = objects.id '
+					. 'left join object_values on object_values.object_id = objects.id '
+					. 'left join object_fields on object_values.field_id = object_fields.id '
+					. 'where objects.name = "article" and object_fields.name = "value" and object_values.value like "%{gallery}%"';
+			$newlist = new ObjectQuery();
+			$newlist->setClass(5); // customfield
+			$newlist->module = 'Gallery:default/images';
+			$newlist->name = 'list';
+			foreach (Yii::$app->getDb()->createCommand($sql)->queryAll(\PDO::FETCH_OBJ) as $page) {
+				$galleries = explode('{gallery}', $page->value);
+				// we don't need text before first gallery
+				$value = array_shift($galleries);
+				foreach ($galleries as $g) {
+					$g = explode('{/gallery}', $g);
+					$value .= $g[1];
+					$list = clone $newlist;
+					$list->value = 'images/' . explode(',', $g[0])[0];
+					$list->save(false);
+					ObjectQuery::addToPage($list->id, $page->page_id);
+				}
+				$p = Pages::findOne($page->page_id);
+				$p->template_id = 3;
+				$p->save(false);
+				$obj = ObjectValues::findOne($page->val_id);
+				$obj->value = $value;
+				$obj->save(false);
+			}
 		} );
 	}
 	
