@@ -41,14 +41,23 @@ AppAsset::register($this);
     ]);
 	$menuItems = array();
 	foreach ($this->params['menus']['navmenu']['children'] as $item) {
-		$menuItems[] = array(
-			'label' => ' ' . $item['menuitem']->caption . ' ',
-			'url' => $item['link']->url,
-		);
+		if (isset($item['link']->url)) {
+			$menuItems[] = array(
+				'label' => ' ' . $item['menuitem']->caption . ' ',
+				'url' => $item['link']->url,
+			);
+		} else {
+			$menuItems[] = array(
+				'label' => ' <s>' . $item['menuitem']->caption . '</s> (' . Yii::t('frontend', 'deleted') . ') ',
+				'url' => Null,
+				
+			);
+		}
 	}
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
+		'encodeLabels' => false,
     ]);
     NavBar::end();
     ?>
@@ -63,7 +72,11 @@ AppAsset::register($this);
 				<header>Встречи ОДН</header>
 				<ul>
 <?php foreach ($this->params['menus']['meetings']['children'] as $item): ?>
+<?php if (isset($item['link']->url)): ?>
 					<li><a href='<?= $item['link']->url ?>'><?= $item['menuitem']->caption ?></a></li>
+<?php else: ?>
+					<li><a><s><?= $item['menuitem']->caption ?></s> (<?= Yii::t('frontend', 'deleted') ?>)</a></li>
+<?php endif; ?>
 <?php endforeach; ?>
 				</ul>
 			</div>

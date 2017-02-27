@@ -55,8 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
 	} ?>
 	<section class='panel panel-default'>
 		<header class='panel-heading panel-title'>
-			<?= $name ?>
-			(<?= $t->className ?>)
+			<?= Yii::t('frontend', $name) ?>
+			(<?= Yii::t('frontend', $t->className) ?>)
 			<a href='<?= Url::to(array_merge(['admin/update', 'class' => $t->classID, 'id' => $t->id, 'block' => 'true'], $addToUrl)) ?>'><?= $action ?></a>
 		</header>
 		<div class='panel-body'>

@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\Pages;
+use frontend\models\ObjectQuery;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -56,27 +57,10 @@ class UserAdminController extends Controller
      */
     public function actionView($id)
     {
+		// TODO: here would be iframe to preview page
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
-
-    /**
-     * Creates a new Pages model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Pages();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
     }
 
     /**
@@ -85,15 +69,21 @@ class UserAdminController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id = 0)
     {
-        $model = $this->findModel($id);
-
+		$objects = [];
+        if ($id) {
+			$model = $this->findModel($id);
+			$objects = ObjectQuery::getPageByURI($model->url, false);
+		} else {
+			$model = new Pages();
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+				'objects' => $objects,
             ]);
         }
     }

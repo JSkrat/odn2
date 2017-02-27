@@ -19,26 +19,26 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 		<!--<pre><?php print_r($model); ?></pre>-->
 		<!--<pre><?php print_r($fields); ?></pre>-->
 		<?php $form = ActiveForm::begin(); ?>
-			<?php echo $form->field($model, 'name')->textInput(['readonly' => $block]); ?>
+			<?php echo $form->field($model, 'name')->textInput(['readonly' => $block])->label(Yii::t('frontend', '[Name]')); ?>
 			<?php foreach ($fields as $f): 
 				switch ($f->namedType->type_name) {
 				case 'text':
-					echo $form->field($model, $f->name)->textInput();
+					echo $form->field($model, $f->name)->textInput()->label(Yii::t('frontend', $f->name));
 					break;
 				case 'formatted text':
-					echo $form->field($model, $f->name)->widget(Redactor::className());
+					echo $form->field($model, $f->name)->widget(Redactor::className())->label(Yii::t('frontend', $f->name));
 					break;
 				case 'object':
-					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name]);
+					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name])->label(Yii::t('frontend', $f->name));
 					break;
 				case 'page':
-					echo $form->field($model, $f->name)->dropDownList($allPagesList);
+					echo $form->field($model, $f->name)->dropDownList($allPagesList)->label(Yii::t('frontend', $f->name));
 					break;
 				}
 			?>
 			<?php endforeach; ?>
 			<hr>
-			<ul>
+			<ul <?php if ($block) echo 'hidden=true'; ?>>
 				<?php if ($block) $ro = 'disabled=true'; else $ro = ''; ?>
 				<?php foreach ($allPagesCheckboxen as $id => $page): ?>
 				<li>
@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = (empty($model->id))?'Create new template':'Upda
 			</ul>
 			<div class="form-group">
 				<?= Html::submitButton(
-						$model->isNewRecord ? 'Create' : 'Update', 
+						Yii::t('frontend', $model->isNewRecord ? 'Create' : 'Update'), 
 						['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']
 				) ?>
 			</div>

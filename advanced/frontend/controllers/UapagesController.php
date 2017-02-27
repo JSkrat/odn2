@@ -68,9 +68,11 @@ class UapagesController extends Controller
 			$page = $this->findModel($id);
 			$templates = [];
 			if ($page->template) {
+				// заполняем список объектов пустыми объектами для этого шаблона
 				foreach ($page->template->templateClasses as $tc) {
 					$templates[$tc->name] = $tc->class_id;
 				}
+				// грузим из базы что есть
 				foreach (ObjectQuery::getPageByURI($page->url, false) as $field) {
 					$templates[$field->name] = $field;
 				}

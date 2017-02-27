@@ -20,13 +20,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'created',
-            'title:ntext',
-            'template.name:ntext:Template name',
-            'url:ntext',
-
+//            'id',
+//            'title:ntext',
+			[
+				'attribute' => 'title',
+				'label' => Yii::t('frontend', 'Title'),
+				'value' => function ($model) {
+					$dots = '';
+					if (mb_strlen($model->title) > 50) $dots = '...';
+					return mb_substr($model->title, 0, 50) . $dots;
+				},
+			],
+            'template.name:ntext:' . Yii::t('frontend', 'Template'),
+//            'url:ntext',
+			[
+				'attribute' => 'url',
+				'label' => Yii::t('frontend', 'Url'),
+				'value' => function ($model) {
+					$dots = '';
+					if (mb_strlen($model->url) > 50) $dots = '...';
+					return mb_substr($model->url, 0, 50) . $dots;
+				},
+			],
+            'created:datetime:' . Yii::t('frontend', 'Created'),
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
