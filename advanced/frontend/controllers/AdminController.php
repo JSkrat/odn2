@@ -172,6 +172,7 @@ class AdminController extends Controller
 				'allowedClasses' => $allowedClasses,
 				'allPagesList' => $allPagesList,
 				'allPagesCheckboxen' => $allPagesCheckboxen,
+				'ownerPages' => $checkedPages,
 				'block' => (boolean) $block,
             ]);
         }

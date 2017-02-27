@@ -57,11 +57,15 @@ $this->params['breadcrumbs'][] = $this->title;
 		<header class='panel-heading panel-title'>
 			<?= Yii::t('frontend', $name) ?>
 			(<?= Yii::t('frontend', $t->className) ?>)
-			<a href='<?= Url::to(array_merge(['admin/update', 'class' => $t->classID, 'id' => $t->id, 'block' => 'true'], $addToUrl)) ?>'><?= $action ?></a>
+			<a href='<?= Url::to(array_merge(['updatefield', 'class' => $t->classID, 'id' => $t->id, 'block' => 'true'], $addToUrl)) ?>'><?= $action ?></a>
 		</header>
 		<div class='panel-body'>
-			<?= (isset($t->value))? $t->value: '—' ?>
+			<div class="truncate-vertical">
+				<?= (isset($t->value))? $t->value: '—' ?>
+			</div>
+			<div class="fadeout"></div>
 		</div>
 	</section>
 <?php endforeach; ?>
 </div>
+	
