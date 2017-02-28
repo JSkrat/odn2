@@ -61,27 +61,27 @@ class UapagesController extends Controller
      */
     public function actionView($id)
     {
-		if (1 == $id) { // HARDCODED id for global fields page
+		if (1 == $id || 0 == $id) { // HARDCODED id for global fields page
 			$page = (object) [
 				'title' => 'Global fields',
-				'id' => 0,
+				'id' => 1,
 			];
-			$templates = ObjectQuery::getPageByURI('home', true);
+			$objects = ObjectQuery::getPageByURI('home', true);
 		} else {
 			$page = $this->findModel($id);
-			$templates = [];
+			$objects = [];
 			if ($page->template) {
 				// заполняем список объектов пустыми объектами для этого шаблона
 				foreach ($page->template->templateClasses as $tc) {
-					$templates[$tc->name] = $tc->class_id;
+					$objects[$tc->name] = $tc->class_id;
 				}
 				// грузим из базы что есть
 				foreach (ObjectQuery::getPageByURI($page->url, false) as $field) {
-					$templates[$field->name] = $field;
+					$objects[$field->name] = $field;
 				}
 			}
 		}
-		$ret = ObjectQuery::constructMenusArrangeObjects($templates);
+		$ret = ObjectQuery::constructMenusArrangeObjects($objects);
         return $this->render('view', [
             'pageModel' => $page,
 			'objects' => $ret['objectsByName'],
@@ -129,11 +129,14 @@ class UapagesController extends Controller
     /**
      * Updates an existing ObjectValues model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $class
-	 * @param integer $id
+     * @param integer $class for create case
+	 * @param integer $id for update case
+	 * @param integer $page owner id
+	 * @param boolean $block hides all pages checkboxes
+	 * @param integer $gobackid ugly implementation of callstack. After save will redirect to view specified id or will redirect to view saved id if not specified
      * @return mixed
      */
-    public function actionUpdatefield($class = 0, $id = 0, $page = null, $block = false) {
+    public function actionUpdatefield($class = 0, $id = 0, $page = null, $block = true, $gobackid = null) {
 //		die(123);
 		if ($id) {
 			$model = $this->findObjectModel($id);
@@ -147,6 +150,7 @@ class UapagesController extends Controller
 		if (null === $classModel) { throw new NotFoundHttpException('The requested page does not exist.'); }
 		$allPagesList = array();
 		$allPagesCheckboxen = array();
+		// actually we're using only one page-owner for any field
 		$checkedPages = array_flip(PageFields::find()->where(['object_id' => $model->id])->select('page_id')->column());
 		foreach (Pages::find()->orderBy('title')->all() as $p) {
 			$caption = "{$p->title} ({$p->url})";
@@ -192,7 +196,9 @@ class UapagesController extends Controller
 				PageFields::getDb()->createCommand()->batchInsert(PageFields::tableName(), (new PageFields())->attributes(), $rows)->execute();
 			});
 //			print_r(Yii::$app->request->post()['pages']); die();
-            return $this->redirect(['view', 'id' => $model->id]);
+			$id = $model->id; // ugly stack implementation
+			if (isset($gobackid)) $id = $gobackid;
+            return $this->redirect(['view', 'id' => $id]);
         } else {
             return $this->render('updatefield', [
                 'model' => $model,

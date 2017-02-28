@@ -26,6 +26,8 @@ return [
 	'[Name]' => 'Поле',
 	'deleted' => 'удалено',
 	'not implemented yet' => 'функция не реализована',
+	'Create menu' => 'Создать новое меню',
+	'Create menuitem' => 'Добавить пункт меню',
 	// fields
 	'page' => 'страница',
 	'meta' => 'ключевые слова',

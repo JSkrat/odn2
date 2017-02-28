@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-<?php if (0 != $pageModel->id): ?>
+<?php if (0 != $pageModel->id && 1 != $pageModel->id): ?>
     <p>
         <?= Html::a(Yii::t('frontend', 'Update'), ['update', 'id' => $pageModel->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('frontend', 'Delete'), ['delete', 'id' => $pageModel->id], [
@@ -39,10 +39,16 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 <?php endif; ?>
 	<hr>
+	<!--pre><?php print_r($pageModel); ?></pre-->
 <!-- Beware! That code will not work for recursive menus! -->
+	<p>
+		<?= Html::a(Yii::t('frontend', 'Create menu'), ['updatefield', 'class' => 4, 'page' => $pageModel->id, 'gobackid' => $pageModel->id], ['class' => 'btn btn-primary hidden']) ?>
+		<?= Html::a(Yii::t('frontend', 'Create menuitem'), ['updatefield', 'class' => 7, 'page' => $pageModel->id, 'gobackid' => $pageModel->id], ['class' => 'btn btn-primary']) ?>
+	</p>
 <?php foreach ($menus as $menu): ?>
 	<section class="panel panel-default">
 		<header class="panel-heading panel-title">
+			<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatefield', 'id' => $menu['parent']->id, 'gobackid' => $pageModel->id], ['class' => 'hidden']) ?></span>
 			<?= Yii::t('frontend', $menu['parent']->name) ?>
 		</header>
 		<!--div class="panel-body">
@@ -50,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<ul class="list-group">
 	<?php foreach ($menu['children'] as $item): ?>
 			<li class="list-group-item">
-				<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatemenuitem', 'id' => $item['menuitem']->id]) ?></span>
+				<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatefield', 'id' => $item['menuitem']->id, 'gobackid' => $pageModel->id]) ?></span>
 		<?php if ('menuitempage' == $item['menuitem']->className): ?>
 				<?= $item['menuitem']->caption ?>
 				<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
@@ -67,9 +73,6 @@ $this->params['breadcrumbs'][] = $this->title;
 		</ul>
 	</section>
 <?php endforeach; ?>
-	<pre>
-<?php print_r($menus); ?>
-	</pre>
 	<hr>
 <?php foreach ($objects as $name => $t): ?>
 	<?php if ('integer' == gettype($t)) {
@@ -87,9 +90,9 @@ $this->params['breadcrumbs'][] = $this->title;
 	} ?>
 	<section class='panel panel-default'>
 		<header class='panel-heading panel-title'>
+			<span class="pull-right"><a href='<?= Url::to(array_merge(['updatefield', 'class' => $t->classID, 'id' => $t->id], $addToUrl)) ?>'><?= $action ?></a></span>
 			<?= Yii::t('frontend', $name) ?>
 			(<?= Yii::t('frontend', $t->className) ?>)
-			<a href='<?= Url::to(array_merge(['updatefield', 'class' => $t->classID, 'id' => $t->id, 'block' => 'true'], $addToUrl)) ?>'><?= $action ?></a>
 		</header>
 		<div class='panel-body'>
 			<div class="truncate-vertical">
