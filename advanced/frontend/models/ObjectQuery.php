@@ -315,7 +315,11 @@ class ObjectQuery extends ActiveRecord {
 		$ids = []; $request = [];
 		$objectsByName = [];
 		$moduleObjects = []; // for modules
-		foreach ($objectList as $f) {
+		foreach ($objectList as $key => $f) {
+			if (! is_object($f)) {
+				$objectsByName[$key] = $f;
+				continue;
+			}
 			$ids[$f->id] = $f;
 			if (isset($request[$f->id])) {
 				$request[$f->id] = $f; // that is a pointer to some element in the $tree, so we're putting it into $tree

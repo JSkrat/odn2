@@ -23,10 +23,10 @@ $this->title = Yii::t('frontend', 'Update {modelClass}: ', [
 ]);
 //$this->params['breadcrumbs'][] = ['label' => 'Classes', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('frontend', 'Pages'), 'url' => ['uapages/index']];
+//$this->params['breadcrumbs'][] = ['label' => Yii::t('frontend', $model->name), 'url' => ['index', 'class' => $classModel->id]];
 if (1 == count($ownerPages)) {
-	$this->params['breadcrumbs'][] = ['label' => array_flip($ownerPages)[0], 'url' => ['uapages/view', 'id' => array_flip($ownerPages)[0]]];
+	$this->params['breadcrumbs'][] = ['label' => Yii::t('frontend', 'Page') . ' ' . array_flip($ownerPages)[0], 'url' => ['uapages/view', 'id' => array_flip($ownerPages)[0]]];
 }
-$this->params['breadcrumbs'][] = ['label' => Yii::t('frontend', $model->name), 'url' => ['index', 'class' => $classModel->id]];
 $this->params['breadcrumbs'][] = Yii::t('frontend', (empty($model->id))?'Create new field':'Update field');
 ?>
 <div class="template-values-update">
@@ -35,7 +35,9 @@ $this->params['breadcrumbs'][] = Yii::t('frontend', (empty($model->id))?'Create 
 		<!--<pre><?php print_r($model); ?></pre>-->
 		<!--<pre><?php print_r($fields); ?></pre>-->
 		<?php $form = ActiveForm::begin(); ?>
-			<?php echo $form->field($model, 'name')->textInput(['readonly' => $block])->label(Yii::t('frontend', '[Name]')); ?>
+			<span <?= ($block)? 'class="hidden"': '' ?>>
+				<?= $form->field($model, 'name')->textInput(['readonly' => $block])->label(Yii::t('frontend', '[Name]')) ?>
+			</span>
 			<?php foreach ($fields as $f): 
 				switch ($f->namedType->type_name) {
 				case 'text':

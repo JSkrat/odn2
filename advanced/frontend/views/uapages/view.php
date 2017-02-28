@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 <?php endif; ?>
 	<hr>
-	<!--pre><?php print_r($pageModel); ?></pre-->
+<?php if ($menus): ?>
 <!-- Beware! That code will not work for recursive menus! -->
 	<p>
 		<?= Html::a(Yii::t('frontend', 'Create menu'), ['updatefield', 'class' => 4, 'page' => $pageModel->id, 'gobackid' => $pageModel->id], ['class' => 'btn btn-primary hidden']) ?>
@@ -74,6 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	</section>
 <?php endforeach; ?>
 	<hr>
+<?php endif; // ($menus) ?>
 <?php foreach ($objects as $name => $t): ?>
 	<?php if ('integer' == gettype($t)) {
 		$t = (object) [
@@ -90,11 +91,12 @@ $this->params['breadcrumbs'][] = $this->title;
 	} ?>
 	<section class='panel panel-default'>
 		<header class='panel-heading panel-title'>
-			<span class="pull-right"><a href='<?= Url::to(array_merge(['updatefield', 'class' => $t->classID, 'id' => $t->id], $addToUrl)) ?>'><?= $action ?></a></span>
+			<span class="pull-right"><?= Html::a($action, array_merge(['updatefield', 'class' => $t->classID, 'id' => $t->id, 'gobackid' => $pageModel->id], $addToUrl)) ?></span>
 			<?= Yii::t('frontend', $name) ?>
 			(<?= Yii::t('frontend', $t->className) ?>)
 		</header>
 		<div class='panel-body'>
+<?php // switch () ?>
 			<div class="truncate-vertical">
 				<?= (isset($t->value))? $t->value: '—' ?>
 			</div>

@@ -8,6 +8,7 @@ use frontend\models\ObjectQuery;
 use frontend\models\ObjectFields;
 use frontend\models\Classes;
 use frontend\models\PageFields;
+use frontend\models\Templates;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -73,7 +74,9 @@ class UapagesController extends Controller
 			if ($page->template) {
 				// заполняем список объектов пустыми объектами для этого шаблона
 				foreach ($page->template->templateClasses as $tc) {
-					$objects[$tc->name] = $tc->class_id;
+					$objects[$tc->name] = $tc->class_id; /*new ObjectQuery();
+					$objects[$tc->name]->setClass($tc->class_id);
+					$objects[$tc->name]->name = $tc->name;*/
 				}
 				// грузим из базы что есть
 				foreach (ObjectQuery::getPageByURI($page->url, false) as $field) {
@@ -90,38 +93,28 @@ class UapagesController extends Controller
     }
 
     /**
-     * Creates a new Pages model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Pages();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
      * Updates an existing Pages model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id = 0)
     {
-        $model = $this->findModel($id);
-
+		if (0 == $id) {
+			$model = new Pages();
+		} else {
+			$model = $this->findModel($id);
+		}
+		$templates = [];
+		foreach (Templates::find()->all() as $item) {
+			$templates[$item->id] = $item->name;
+		}
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+				'templates' => $templates,
             ]);
         }
     }

@@ -38,6 +38,7 @@ class Pages extends \yii\db\ActiveRecord
             [['created'], 'safe'],
             [['title', 'url'], 'required'],
             [['title', 'url'], 'string'],
+			[['url'], 'unique'],
             [['template_id', 'views'], 'integer'],
             [['template_id'], 'exist', 'skipOnError' => true, 'targetClass' => Templates::className(), 'targetAttribute' => ['template_id' => 'id']],
         ];
