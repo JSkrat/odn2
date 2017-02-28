@@ -43,7 +43,17 @@ $this->params['breadcrumbs'][] = $this->title;
 				},
 			],
             'created:datetime:' . Yii::t('frontend', 'Created'),
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+				'class' => 'yii\grid\ActionColumn',
+				'visibleButtons' => [
+					'delete' => function ($model, $key, $index) {
+						return $model->id != 1;
+					},
+					'update' => function ($model, $key, $index) {
+						return $model->id != 1;
+					}
+				]
+			],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>
