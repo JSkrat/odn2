@@ -12,6 +12,7 @@ use frontend\models\Templates;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\HttpException;
 use yii\filters\VerbFilter;
 //use frontend\models\Templates;
 
@@ -218,6 +219,11 @@ class UapagesController extends Controller
 
         return $this->redirect(['index']);
     }
+	
+	public function actionError() {
+		$error = Yii::app()->errorHandler->error;
+		print_r($error);
+	}
 
     /**
      * Finds the Pages model based on its primary key value.

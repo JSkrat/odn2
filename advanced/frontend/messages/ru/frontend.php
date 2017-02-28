@@ -29,6 +29,10 @@ return [
 	'not implemented yet' => 'функция не реализована',
 	'Create menu' => 'Создать новое меню',
 	'Create menuitem' => 'Добавить пункт меню',
+	'Not Found (#404)' => 'Не обнаружено (ошибка 404)',
+	'Page not found' => 'Такой страницы не обнаружено',
+	'The above error occurred while the Web server was processing your request.' => 'Вот такая ошибка получилась на сервере.',
+	'Please contact us if you think this is a server error. Thank you.' => 'Просьба сообщить нам, если считаете, что её не должно быть, спасибо.',
 	// fields
 	'page' => 'страница',
 	'meta' => 'ключевые слова',

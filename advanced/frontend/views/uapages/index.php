@@ -16,6 +16,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('frontend', 'Create Pages'), ['update'], ['class' => 'btn btn-success']) ?>
     </p>
+<?php
+$dataProvider->sort->attributes['template.name'] = [
+	'asc' => ['template_id' => SORT_ASC],
+	'desc' => ['template_id' => SORT_DESC],
+];
+?>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
@@ -50,8 +56,8 @@ $this->params['breadcrumbs'][] = $this->title;
 						return $model->id != 1;
 					},
 					'update' => function ($model, $key, $index) {
-						return $model->id != 1;
-					}
+						return false; //$model->id != 1;
+					},
 				]
 			],
         ],

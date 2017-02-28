@@ -37,7 +37,7 @@ return [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'page/error',
         ],
         
         'urlManager' => [
