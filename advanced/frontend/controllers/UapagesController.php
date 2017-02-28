@@ -81,9 +81,11 @@ class UapagesController extends Controller
 				}
 			}
 		}
+		$ret = ObjectQuery::constructMenusArrangeObjects($templates);
         return $this->render('view', [
             'pageModel' => $page,
-			'templates' => $templates,
+			'objects' => $ret['objectsByName'],
+			'menus' => $ret['menus'],
         ]);
     }
 

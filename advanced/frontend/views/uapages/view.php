@@ -39,7 +39,39 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 <?php endif; ?>
 	<hr>
-<?php foreach ($templates as $name => $t): ?>
+<!-- Beware! That code will not work for recursive menus! -->
+<?php foreach ($menus as $menu): ?>
+	<section class="panel panel-default">
+		<header class="panel-heading panel-title">
+			<?= Yii::t('frontend', $menu['parent']->name) ?>
+		</header>
+		<!--div class="panel-body">
+		</div-->
+		<ul class="list-group">
+	<?php foreach ($menu['children'] as $item): ?>
+			<li class="list-group-item">
+				<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatemenuitem', 'id' => $item['menuitem']->id]) ?></span>
+		<?php if ('menuitempage' == $item['menuitem']->className): ?>
+				<?= $item['menuitem']->caption ?>
+				<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+			<?php if ($item['link']): ?>
+				<a href="/<?=$item['link']->url ?>"><?= $item['link']->title ?></a>
+			<?php else: ?>
+				<em><?= Yii::t('frontend', 'deleted') ?></em> (<?= $item['menuitem']->link ?>)
+			<?php endif; ?>
+		<?php else: ?>
+				<em><?= Yii::t('frontend', 'not implemented yet') ?></em>
+		<?php endif; ?>
+			</li>
+	<?php endforeach; ?>
+		</ul>
+	</section>
+<?php endforeach; ?>
+	<pre>
+<?php print_r($menus); ?>
+	</pre>
+	<hr>
+<?php foreach ($objects as $name => $t): ?>
 	<?php if ('integer' == gettype($t)) {
 		$t = (object) [
 			'className' => '',

@@ -235,7 +235,7 @@ class ObjectQuery extends ActiveRecord {
 				$objectFields[$field->name] = $field->id;
 			}
 			$this->id = $object->id;
-			foreach ($this->allFields as $fieldname) if ('name' != $fieldname) {
+			foreach ($this->allFields as $fieldname) { if ('name' != $fieldname) {
 				$model = ObjectValues::findOne(['object_id' => $this->id, 'field_id' => $objectFields[$fieldname]]);
 				if (null === $model) {
 					$model = new ObjectValues();
@@ -251,7 +251,7 @@ class ObjectQuery extends ActiveRecord {
 					$this->errors = $model->errors;
 					throw new Exception('field save fault');
 				}
-			}
+			} }
 			$transaction->commit();
 	//		parent::save($runValidation, $attributeNames);
 			return true;
@@ -300,6 +300,77 @@ class ObjectQuery extends ActiveRecord {
 		}
 		// cheat: we name urls like they was, so just regexp would be enough to fix links
 		return preg_replace('(href="index.php/([^/]+/)*([^"]+)")', 'href="$2"', $value);
+	}
+	
+	/**
+	 * construct menus to tree-like structures
+	 * need for page show and menu editor in adminpanel
+	 * no queries executed here
+	 * create modules (wrong way, so it works only once)
+	 * @param array $objectList objects like from ObjectQuery::getPageByURI
+	 * @return dictionary 'menus' => all menus in tree form, 'objectsByName' => rest objects
+	 */
+	public static function constructMenusArrangeObjects($objectList) {
+		$tree = []; // all child items. Key - parent id
+		$ids = []; $request = [];
+		$objectsByName = [];
+		$moduleObjects = []; // for modules
+		foreach ($objectList as $f) {
+			$ids[$f->id] = $f;
+			if (isset($request[$f->id])) {
+				$request[$f->id] = $f; // that is a pointer to some element in the $tree, so we're putting it into $tree
+				unset($request[$f->id]); // remove request from query
+			}
+			// construct one-layer menu (just insert menuitems and objects menuitems linked to to their parents)
+			if ('menuitemtemplate' == $f->className) {
+				if (isset($ids[$f->link])) {
+					// link object already passed and in $ids, just create as usual
+					$item = array('menuitem' => $f, 'link' => $ids[$f->link]);
+				} else {
+					$item = array('menuitem' => $f, 'link' => false);
+					// request that link to be filled when we reach that object
+					// TODO: will not work if we have two links to the same object
+					$request[$f->link] = &$item['link'];
+				}
+				if (isset($tree[$f->parent])) {
+					$tree[$f->parent]['children'][$f->id] = $item;
+				} else {
+					$tree[$f->parent] = array(['children' => [$f->id => $item]]);
+				}
+			} elseif ('menuitempage' == $f->className) {
+				// find method caches requests, so only one request per page would be executed
+				// this is bad: we should get all pages by only one request!
+				$item = array('menuitem' => $f, 'link' => Pages::findOne($f->link));
+				if (isset($tree[$f->parent])) {
+					$tree[$f->parent]['children'][$f->id] = $item;
+				} else {
+					$tree[$f->parent] = array(['children' => [$f->id => $item]]);
+				}
+			} elseif ('menu' == $f->className) {
+				if (isset($tree[$f->id])) {
+					$tree[$f->id]['parent'] = $f;
+				} else {
+					$tree[$f->id] = array('parent' => $f, 'children' => array());
+				}
+			} else {
+				// for all other objects
+				if (isset($f->name)) {
+					if (isset($f->module) && ! empty($f->module)) {
+						$moduleName = explode(':', $f->module); if (! isset($moduleName[1])) { $moduleName[1] = ''; }
+						$moduleFullName = '\frontend\modules\\' . $moduleName[0];
+						// TODO: i believe here is wrong usage of creating module, rewrite when we need more than 1 call per page
+						$module = new $moduleFullName ($moduleName[0]);
+						$f->value = $module->runAction($moduleName[1], ['value' => $f->value]);
+					} 
+					$objectsByName[$f->name] = $f;
+				}
+			}
+		}
+		$menus = array();
+		foreach ($tree as $menu) {
+			$menus[$menu['parent']->name] = $menu;
+		}
+		return ['menus' => $menus, 'objectsByName' => $objectsByName];
 	}
 	
 	/**
