@@ -15,6 +15,8 @@ use yii\web\NotFoundHttpException;
 use yii\web\HttpException;
 use yii\filters\VerbFilter;
 //use frontend\models\Templates;
+use pendalf89\filemanager\models\MediafileSearch;
+//use 
 
 /**
  * UAPagesController implements the CRUD actions for Pages model.
@@ -90,6 +92,7 @@ class UapagesController extends Controller
             'pageModel' => $page,
 			'objects' => $ret['objectsByName'],
 			'menus' => $ret['menus'],
+			'fileModel' => new MediafileSearch(),
         ]);
     }
 

@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<section class="panel panel-default">
 		<header class="panel-heading panel-title">
 			<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatefield', 'id' => $menu['parent']->id, 'gobackid' => $pageModel->id], ['class' => 'hidden']) ?></span>
-			<?= Yii::t('frontend', $menu['parent']->name) ?>
+			<?= Yii::t('frontend', $menu['parent']->name) ?> (<?= $menu['parent']->name ?>)
 		</header>
 		<!--div class="panel-body">
 		</div-->
@@ -96,11 +96,22 @@ $this->params['breadcrumbs'][] = $this->title;
 			(<?= Yii::t('frontend', $t->className) ?>)
 		</header>
 		<div class='panel-body'>
-<?php // switch () ?>
+<?php switch (@$t->types['value']): ?>
+<?php	case 3: // file ?>
+			<?php
+			$file = pathInfo($t->value);
+			?>
+			<!?= Html::img($file['dirname'] . '/' . $file['filename'] . '-fm.' . $file['extension']) ?>
+			<?= dosamigos\gallery\Gallery::widget(['items' => [['url' => $t->value, 'src' => $file['dirname'] . '/' . $file['filename'] . '-fm.' . $file['extension']]]]) ?>
+<?php	break; ?>
+<?php	default: ?>
 			<div class="truncate-vertical">
 				<?= (isset($t->value))? $t->value: '—' ?>
 			</div>
 			<div class="fadeout"></div>
+<?php endswitch; ?>
+			<hr>
+			<!--pre><?php print_r($t); ?></pre-->
 		</div>
 	</section>
 <?php endforeach; ?>

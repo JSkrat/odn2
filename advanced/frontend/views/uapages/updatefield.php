@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\redactor\RedactorModule;
 use yii\redactor\widgets\Redactor;
+use pendalf89\filemanager\widgets\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TemplateValues */
@@ -34,22 +35,30 @@ $this->params['breadcrumbs'][] = Yii::t('frontend', (empty($model->id))?'Create 
 	<div class="template-values-form">
 		<!--<pre><?php print_r($model); ?></pre>-->
 		<!--<pre><?php print_r($fields); ?></pre>-->
-		<?php $form = ActiveForm::begin(); ?>
+		<?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 			<span <?= ($block)? 'class="hidden"': '' ?>>
 				<?= $form->field($model, 'name')->textInput(['readonly' => $block])->label(Yii::t('frontend', '[Name]')) ?>
 			</span>
 			<?php foreach ($fields as $f): 
-				switch ($f->namedType->type_name) {
-				case 'text':
+				switch ($model->types[$f->name]) {
+				case 1: // text
 					echo $form->field($model, $f->name)->textInput()->label(Yii::t('frontend', $f->name));
 					break;
-				case 'formatted text':
+				case 3: // file
+					echo Html::img($model->{$f->name}, ['class' => 'img-thumbnail']);
+//					echo $form->field($model, $f->name)->fileInput()->label(Yii::t('frontend', $f->name));
+					echo $form->field($model, $f->name)->widget(FileInput::className(), [
+//						'imageContainer' => '.img',
+//						'template' => '<div class="input-group">{input}<span class="input-group-btn">{button}</span></div>{image}{img}{src}{url}',
+						]);
+					break;
+				case 4: // formatted text
 					echo $form->field($model, $f->name)->widget(Redactor::className())->label(Yii::t('frontend', $f->name));
 					break;
-				case 'object':
+				case 5: // object
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name])->label(Yii::t('frontend', $f->name));
 					break;
-				case 'page':
+				case 7: // page
 					echo $form->field($model, $f->name)->dropDownList($allPagesList)->label(Yii::t('frontend', $f->name));
 					break;
 				}

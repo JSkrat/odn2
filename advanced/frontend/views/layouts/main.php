@@ -26,8 +26,8 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
 <div class='wrap'><div><div class='container'>
 	<div class="row">
-		<div class="pull-left"><?= $this->params['logo'] ?></div>
-		<div class="text-center"><?= $this->params['header'] ?></div>
+		<div class="pull-left"><?= Html::img(@$this->params['logo']) ?></div>
+		<div class="text-center"><?= Html::img(@$this->params['header']) ?></div>
 		<div class="pull-right">search</div>
 	</div>
 	<div class='row'>
@@ -40,7 +40,7 @@ AppAsset::register($this);
         ],
     ]);
 	$menuItems = array();
-	foreach ($this->params['menus']['navmenu']['children'] as $item) {
+	if (isset($this->params['menus'])) foreach ($this->params['menus']['navmenu']['children'] as $item) {
 		if (isset($item['link']->url)) {
 			$menuItems[] = array(
 				'label' => ' ' . $item['menuitem']->caption . ' ',
@@ -71,7 +71,7 @@ AppAsset::register($this);
 			<div class=''>
 				<header>Встречи ОДН</header>
 				<ul>
-<?php foreach ($this->params['menus']['meetings']['children'] as $item): ?>
+<?php if (isset($this->params['menus'])) foreach ($this->params['menus']['meetings']['children'] as $item): ?>
 <?php if (isset($item['link']->url)): ?>
 					<li><a href='<?= $item['link']->url ?>'><?= $item['menuitem']->caption ?></a></li>
 <?php else: ?>
@@ -83,7 +83,7 @@ AppAsset::register($this);
 			<div class=''>
 				<header>Последние материалы</header>
 				<ul>
-<?php foreach ($this->params['lastPages'] as $item): ?>
+<?php if (isset($this->params['lastPages'])) foreach ($this->params['lastPages'] as $item): ?>
 					<li><a href='<?= $item->url ?>'><?= $item->title ?></a></li>
 <?php endforeach; ?>
 				</ul>
@@ -91,7 +91,7 @@ AppAsset::register($this);
 			<div class=''>
 				<header>Самые читаемые</header>
 				<ul>
-<?php foreach ($this->params['popularPages'] as $item): ?>
+<?php if (isset($this->params['popularPages'])) foreach ($this->params['popularPages'] as $item): ?>
 					<li><a href='<?= $item->url ?>'><?= $item->title ?></a></li>
 <?php endforeach; ?>
 				</ul>

@@ -29,6 +29,8 @@ class ObjectQuery extends ActiveRecord {
 	private $required = array();
 	private $integer = array();
 	private $string = array('name');
+	private $file = array();
+	private $image = array();
 	public $id;
 	
 	/**
@@ -137,7 +139,7 @@ class ObjectQuery extends ActiveRecord {
 	}
 	
 	public static function populateRecord($record, $row, $values = null, $fields = null) {
-//		print_r($row); die();
+//		print_r(['rec' => $record, 'row' => $row, 'val' => $values, 'fields' => $fields]); //die();
 		// initialize object with fields
 		$id = $row['id'];
 		$name = $row['name'];
@@ -186,8 +188,21 @@ class ObjectQuery extends ActiveRecord {
             [$this->required, 'required'],
             [$this->string, 'string'],
 			[$this->integer, 'integer'],
+			[$this->file, 'file'],
+			[$this->image, 'file', 'mimeTypes' => 'image/*'],
         ];
     }
+	
+	public function upload() {
+		if ($this->validate()) {
+			foreach (array_merge($this->image, $this->file) as $f) {
+				$this->$f->saveAs('uploads/' . $this->$f->baseName . '.' . $this->$f->extension);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
 
     /**
      * @return \yii\db\ActiveQuery

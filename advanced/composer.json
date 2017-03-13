@@ -19,6 +19,8 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "yiidoc/yii2-redactor": "*",
+        "pendalf89/yii2-filemanager": "@dev",
+        "pendalf89/yii2-tinymce": "@dev",
         "2amigos/yii2-gallery-widget": "~1.0"
     },
     "require-dev": {
