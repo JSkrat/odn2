@@ -2,8 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\redactor\RedactorModule;
-use yii\redactor\widgets\Redactor;
+//use yii\redactor\widgets\Redactor;
+use pendalf89\filemanager\widgets\TinyMCE;
 use pendalf89\filemanager\widgets\FileInput;
 
 /* @var $this yii\web\View */
@@ -53,7 +53,30 @@ $this->params['breadcrumbs'][] = Yii::t('frontend', (empty($model->id))?'Create 
 						]);
 					break;
 				case 4: // formatted text
-					echo $form->field($model, $f->name)->widget(Redactor::className())->label(Yii::t('frontend', $f->name));
+//					echo $form->field($model, $f->name)->widget(Redactor::className())->label(Yii::t('frontend', $f->name));
+					echo $form->field($model, $f->name)->widget(TinyMce::className(), [
+						'clientOptions' => [
+							'language' => 'ru',
+							'menubar' => true,
+							'height' => 500,
+							'image_dimensions' => false,
+							'image_advtab' => true,
+							'plugins' => [
+								'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code contextmenu table',
+							],
+//							'toolbar' => 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code',
+//							'setup' => 'setupTinymce',
+						],
+					]);
+					/*echo FileInput::widget([
+						'name' => '',
+						'options' => ['id' => 'iframe-tinymce'],
+						'callbackBeforeInsert' => 'function(e, data) {
+							console.log( data );
+						}',
+//						'imageContainer' => '.img',
+//						'template' => '<div class="input-group">{input}<span class="input-group-btn">{button}</span></div>{image}{img}{src}{url}',
+						]);*/
 					break;
 				case 5: // object
 					echo $form->field($model, $f->name)->dropDownList($allowedClasses[$f->name])->label(Yii::t('frontend', $f->name));

@@ -19,6 +19,17 @@ function transliterate(word){
   }).join("");
 }
 
+function setupTinymce(editor) {
+	console.log('inserting button');
+	editor.addButton('insertimage', {
+		title: 'Insert image',
+		icon: 'image',
+		onclick: function () {
+			editor.insertContent('hello, world');
+		}
+	});
+}
+
 $(document).ready( function() {
 	$('.truncate-vertical').each( function (self) {
 //		alert(parseInt($(this).css('max-height')) + '\n' + $(this).height());
@@ -30,4 +41,5 @@ $(document).ready( function() {
 	$('[data-translit="source"]').change( function () {
 		$('[data-translit=destination]').val(transliterate($(this).val()));
 	});
+	
 });

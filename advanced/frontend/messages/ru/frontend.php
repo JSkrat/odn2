@@ -33,6 +33,7 @@ return [
 	'Page not found' => 'Такой страницы не обнаружено',
 	'The above error occurred while the Web server was processing your request.' => 'Вот такая ошибка получилась на сервере.',
 	'Please contact us if you think this is a server error. Thank you.' => 'Просьба сообщить нам, если считаете, что её не должно быть, спасибо.',
+	'Browse' => 'Все файлы',
 	// fields
 	'page' => 'страница',
 	'meta' => 'ключевые слова',
