@@ -30,6 +30,19 @@ function setupTinymce(editor) {
 	});
 }
 
+var activeButton   = 'label-success',
+	inactiveButton = 'label-default'
+function SaveMenuorder(url, id) {
+	$.post(url + '?ids=' + $('#' + id).find('input').val(), {}, function (data) {
+		if (data) alert(data);
+		else {
+			$('#' + id).find('.save-order-button').removeClass(activeButton).addClass(inactiveButton);
+		}
+	}).fail(function () {
+		alert('Неизвестная ошибка');
+	})
+}
+
 $(document).ready( function() {
 	$('.truncate-vertical').each( function (self) {
 //		alert(parseInt($(this).css('max-height')) + '\n' + $(this).height());
@@ -38,8 +51,13 @@ $(document).ready( function() {
 		}
 	});
 	// scripts for adminpanel
+	// url for page
 	$('[data-translit="source"]').change( function () {
 		$('[data-translit=destination]').val(transliterate($(this).val()));
 	});
-	
+	// save menuitem order
+	$('.menuitems input').change( function () {
+		var btn = $(this).parents('.menuitems').find('.save-order-button');
+		btn.removeClass(inactiveButton).addClass(activeButton);
+	});
 });

@@ -277,6 +277,19 @@ class ObjectQuery extends ActiveRecord {
 		}
 	}
 	
+	public static function saveMenuOrder($menuitemIDs) {
+		// TODO: duplicated id will ruin that
+		$menuitems = ObjectQuery::find()->where('id in (' . $menuitemIDs . ')')->all();
+		$menuitemIDs = array_flip(explode(',', $menuitemIDs));
+//		$debugOutput = [];
+		foreach ($menuitems as $item) {
+			$item->order = $menuitemIDs[$item->id];
+//			$debugOutput[] = ['id' => $item->id, 'order' => $item->order];
+			$item->save();
+		}
+//		print_r($debugOutput);
+	}
+	
 	/**
 	 * for import
 	 */
@@ -387,6 +400,19 @@ class ObjectQuery extends ActiveRecord {
 		}
 		$menus = array();
 		foreach ($tree as $menu) {
+			$sortedMenu = []; $unsortedMenu = [];
+			foreach ($menu['children'] as $item) {
+//				print_r($item); die();
+				$o = -1;
+				if (isset($item['menuitem']->order)) $o = $item['menuitem']->order;
+				if (-1 == $o || isset($sortedMenu[$o])) {
+					$unsortedMenu[] = $item;
+				} else {
+					$sortedMenu[$o] = $item;
+				}
+			}
+			ksort($sortedMenu);
+			$menu['children'] = array_merge($sortedMenu, $unsortedMenu);
 			$menus[$menu['parent']->name] = $menu;
 		}
 		return ['menus' => $menus, 'objectsByName' => $objectsByName];

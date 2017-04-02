@@ -260,4 +260,11 @@ class UapagesController extends Controller
         }
     }
 	
+	public function actionSavemenuorder($ids) {
+		// we will not check if all id belongs to one menu
+		// we will not check for duplicates
+		// this is adminpanel, we will not expect haching attempt here as it will not work withour authorisation
+		ObjectQuery::saveMenuOrder($ids);
+	}
+	
 }

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
+use kartik\sortinput\SortableInput;
 
 /* @var $this yii\web\View */
 /* @var $pageModel frontend\models\Pages */
@@ -45,32 +46,32 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?= Html::a(Yii::t('frontend', 'Create menu'), ['updatefield', 'class' => 4, 'page' => $pageModel->id, 'gobackid' => $pageModel->id], ['class' => 'btn btn-primary hidden']) ?>
 		<?= Html::a(Yii::t('frontend', 'Create menuitem'), ['updatefield', 'class' => 7, 'page' => $pageModel->id, 'gobackid' => $pageModel->id], ['class' => 'btn btn-primary']) ?>
 	</p>
-<?php foreach ($menus as $menu): ?>
-	<section class="panel panel-default">
+<?php $id = 0;
+foreach ($menus as $menu): 
+	$id += 1;
+?>
+	<section class="panel panel-default menuitems" id="menu-<?= $id ?>">
 		<header class="panel-heading panel-title">
+			<span class="pull-right"><a href="#" class="save-order-button label label-default" onclick="SaveMenuorder('<?= Url::to(['savemenuorder']) ?>', 'menu-<?= $id ?>'); return false;"><?= Yii::t('frontend', 'Save order') ?></a></span>
 			<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatefield', 'id' => $menu['parent']->id, 'gobackid' => $pageModel->id], ['class' => 'hidden']) ?></span>
 			<?= Yii::t('frontend', $menu['parent']->name) ?> (<?= $menu['parent']->name ?>)
 		</header>
 		<!--div class="panel-body">
 		</div-->
-		<ul class="list-group">
+	<?php $items = []; ?>
 	<?php foreach ($menu['children'] as $item): ?>
-			<li class="list-group-item">
-				<span class="pull-right"><?= Html::a(Yii::t('frontend', 'Edit'), ['updatefield', 'id' => $item['menuitem']->id, 'gobackid' => $pageModel->id]) ?></span>
-		<?php if ('menuitempage' == $item['menuitem']->className): ?>
-				<?= $item['menuitem']->caption ?>
-				<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
-			<?php if ($item['link']): ?>
-				<a href="/<?=$item['link']->url ?>"><?= $item['link']->title ?></a>
-			<?php else: ?>
-				<em><?= Yii::t('frontend', 'deleted') ?></em> (<?= $item['menuitem']->link ?>)
-			<?php endif; ?>
-		<?php else: ?>
-				<em><?= Yii::t('frontend', 'not implemented yet') ?></em>
-		<?php endif; ?>
-			</li>
+		<?php 
+			$items[$item['menuitem']->id] = ['content' => $this->render('menuitem', ['item' => $item, 'pageModel' => $pageModel])];
+		?>
 	<?php endforeach; ?>
-		</ul>
+	<?php echo SortableInput::widget([
+		'name' => 'test',
+		'model' => null,
+		'attribute' => 'sort_list',
+		'hideInput' => true,
+		'delimiter' => ',',
+		'items' => $items,
+	]); ?>
 	</section>
 <?php endforeach; ?>
 	<hr>
