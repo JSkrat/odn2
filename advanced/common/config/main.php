@@ -7,11 +7,6 @@ return [
         ],
     ],
 	'modules' => [
-		'redactor' => [
-			'class' => 'yii\redactor\RedactorModule',
-			'uploadDir' => '@webroot/images',
-			'uploadUrl' => '@web/images',
-		],
 		'imagegallery' => [
 			'class' => 'dosamigos\gallery\Gallery',			
 		],
@@ -42,5 +37,6 @@ return [
 				],
 			],
 		],
+        'utility' => [ 'class' => 'c006\utility\migration\Module', ],
 	],
 ];

@@ -62,9 +62,9 @@ $this->params['breadcrumbs'][] = Yii::t('frontend', (empty($model->id))?'Create 
 							'image_dimensions' => false,
 							'image_advtab' => true,
 							'plugins' => [
-								'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code contextmenu table',
+								'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code contextmenu table media',
 							],
-//							'toolbar' => 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code',
+							'toolbar' => 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code',
 //							'setup' => 'setupTinymce',
 						],
 					]);
